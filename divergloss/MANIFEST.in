@@ -1,0 +1,17 @@
+# Manifest.in
+
+global-include *.py
+global-include *.sh
+global-include *.txt
+
+graft doc
+graft example
+
+graft dgproc/dtd
+graft dgproc/po
+recursive-include dgproc/mo *.mo
+graft dgproc/dg/doc
+graft dgproc/dg/sieve/html_extras
+graft dgproc/dg/sieve/html_bidict_extras
+
+global-exclude .htaccess

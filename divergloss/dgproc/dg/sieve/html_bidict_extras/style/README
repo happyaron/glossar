@@ -1,0 +1,4 @@
+The .css.in style files contain @foo@ placeholders which are replaced by
+the sieve to create the final styles.
+If you are using one of these files as a template for your own style,
+be sure to look for and resolve all such placeholders.

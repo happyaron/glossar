@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dg.sieve.html_bidict</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dg-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="dg-module.html">Package&nbsp;dg</a> ::
+        <a href="dg.sieve-module.html">Package&nbsp;sieve</a> ::
+        Module&nbsp;html_bidict
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module html_bidict</h1><p class="nomargin-top"></p>
+<p>Create HTML table with bilingual dictionary.</p>
+  <p>For example, having a bilingual English/Serbian (en/sr) glossary 
+  <code>gloss.xml</code>, the HTML page with the dictionary table could be 
+  created by:</p>
+<pre class="literalblock">
+   $ dgproc.py html-bidict gloss.xml -s olang:en -s tlang:sr \ 
+                                     -s file:gloss.html -s style:igloo
+</pre>
+  <p>The <code>olang</code> parameter specifies the original language for 
+  the dictionary, and <code>tlang</code> the target language. The 
+  <code>file</code> parameter names the file of the resulting HTML page, as
+  well as the basename for the accompanying style sheet and JavaScript 
+  control files included by the HTML page header. The <code>style</code> 
+  parameter selects one of the internal style sheets (which are listed in 
+  the sieve help, using <code>--help-sieve</code> option). The given 
+  command will ultimately produce three files: <code>gloss.html</code>, 
+  <code>gloss.css</code>, and <code>gloss.js</code>.</p>
+  <p>The HTML page will contain only a single compact two-column table, 
+  with the left column containing distinct terms from the original 
+  language, and the right column the corresponding terms in the target 
+  language. If, for a given original term, there are several target terms, 
+  and all of them name name the same concept, the target terms will be 
+  given as a comma-separated list in the right column. On the other hand, 
+  if the original term names several different concepts, and there are 
+  different target terms for them, such target terms will be given one 
+  below the other in the right column, as an enumerated list.</p>
+  <p>The description and other details on the concepts behind each term in 
+  the target language will be provided as folded sections of the table, 
+  which can be unrolled with a +/- button somewhere in the table row. If 
+  there several concepts are named by the same term, the details of all of 
+  them are given in the folding section for that term.</p>
+  <p>The <code>style</code> parameter is optional; if not given, the page 
+  will be left without a style sheet. This is handy when the user has 
+  prepared an own style sheet (which can be based on one of the internal 
+  sheets); in such case, the user will probably also make use of the 
+  <code>header</code> parameter.</p>
+  <p>Using the parameters <code>header</code> and <code>footer</code>, the 
+  user can specify text files to be prepended before and appended after the
+  HTML code for the table (without them, the sieve provides minimal header 
+  and footer to make a valid standalone HTML page).</p>
+  <p>The user can explicitly specify names for the accompanying CSS and JS 
+  files to be created, using the <code>cssfile</code> and 
+  <code>jsfile</code> parameters, instead of these names being derived from
+  the name of the HTML file. Again, this is mostly useful in conjunction 
+  with external header and footer.</p>
+  <p>Instead of creating separate CSS and JS files, using 
+  <code>phpinc</code> parameter both the style sheet and control functions 
+  can be written into a single file, wrapped in appropriate tags for PHP 
+  inclusion into the body of the HTML file. The file name of this file too 
+  will be derived from the HTML file name as <code>gloss.inc</code>, but an
+  explicit name can be given by the <code>incfile</code> parameter. Note 
+  that in this case the file name of the page (given by <code>file</code> 
+  parameter) should probably end in <code>.php</code>.</p>
+  <p>Finally, both the CSS and JS content can be directly embedded into the
+  page, so that only this one HTML file is produced by the sieve. This is 
+  done by specifyng the <code>allinone</code> parameter. Note that it 
+  conflicts all parameters which deal with auxiliary files for 
+  inclusion.</p>
+  <p>If the glossary contains several environments, one of them may be 
+  selected by the usual <code>env</code> parameter. If not given, the 
+  default environment is used. Only those concepts which have at least one 
+  term in the original and target language and environment will be used as 
+  sources of terms.</p>
+  <p>Internal style sheets (as selected by the <code>style</code> 
+  parameter) contain some values which can be tuned through the command 
+  line using the <code>styleopt</code> parameter. It takes a 
+  comma-separated list of <code>name=value</code> pairs. For example, to 
+  set the width of the column with terms in the original language to a 
+  third of the table width, use:</p>
+<pre class="literalblock">
+   $ dgproc.py html-bidict ... -sstyleopt:'oterm_col_width=33%'
+</pre>
+  <p>Available style options are listed in the sieve help 
+  (<code>-H</code>), under the description of the <code>styleopt</code> 
+  parameter.</p>
+
+<hr />
+<div class="fields">      <p><strong>Author:</strong>
+        Chusslove Illich (&#1063;&#1072;&#1089;&#1083;&#1072;&#1074; &#1048;&#1083;&#1080;&#1115;) &lt;caslav.ilic@gmx.net&gt;
+      </p>
+      <p><strong>License:</strong>
+        GPLv3
+      </p>
+</div><!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Classes</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.sieve.html_bidict.Subcommand-class.html" class="summary-name">Subcommand</a>
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Functions</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="fill_optparser"></a><span class="summary-sig-name">fill_optparser</span>(<span class="summary-sig-arg">parser_view</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dg-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

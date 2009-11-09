@@ -1,0 +1,101 @@
+/* =========================================================================
+ * Minimal style providing only reasonable spacing.
+ * Useful as template for more detailed styles.
+ * ========================================================================= */
+
+/* dictionary table */
+table.bd-table {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+/* dictionary header */
+tr.bd-header {
+    text-align: left;
+}
+th.bd-header-ol { /* origin language header */
+    padding-left: 0.5em;
+    padding-right: 1.5em;
+}
+th.bd-header-tl { /* target language header */
+    padding-left: 0.5em;
+    padding-right: 1.5em;
+}
+
+/* alphabetical separator row */
+tr.bd-alsep {
+}
+td.bd-alsep-al { /* alpha column */
+    vertical-align: top;
+    padding-left: 0.5em;
+    margin-top: 0.5em;
+
+    font-weight: bold;
+}
+
+/* dictionary entry row, odd-numbered */
+tr.bd-entry-odd {
+}
+
+/* dictionary entry row, even-numbered */
+tr.bd-entry-even {
+}
+
+/* original term column */
+td.bd-oterm {
+    vertical-align: top;
+    padding-left: 0.5em;
+    padding-right: 1.5em;
+    width: @oterm_col_width@;
+}
+
+/* original term */
+p.bd-otline {
+    margin-top: 0.1em;
+    margin-bottom: 0.1em;
+    text-indent: 0em;
+}
+
+/* target terms column */
+td.bd-tterms {
+    vertical-align: top;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+/* single term group (sharing same meaning) */
+div.bd-ttgroup {
+    margin-top: 0.1em;
+    margin-bottom: 0.1em;
+}
+
+/* target terms */
+p.bd-ttline {
+    margin-top: 0.1em;
+    margin-bottom: 0.1em;
+    text-indent: 0em;
+}
+
+/* concept description */
+p.bd-desc {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 1.0em;
+}
+
+/* concept cross reference */
+a.cref {
+}
+
+/* entry display controls */
+div.bd-edctl {
+    float: right;
+}
+a.bd-edctl {
+    font-family: monospace;
+    text-decoration: none;
+    color: black;
+}

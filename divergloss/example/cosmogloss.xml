@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossary SYSTEM "divergloss.dtd">
+
+<glossary id="cosmogloss" lang="en">
+
+  <metadata>
+    <title>A Short Cosmic Glossary</title>
+  </metadata>
+
+  <keydefs>
+    <languages>
+      <language id="en">
+        <name>English</name>
+        <shortname>En.</shortname>
+      </language>
+    </languages>
+  </keydefs>
+
+  <concepts>
+
+    <concept id="blackhole">
+      <desc>
+        The leftover core of a super massive star after a supernova,
+        that exerts a tremendous gravitational pull.</desc>
+      <term>black hole</term>
+    </concept>
+
+    <concept id="quasar">
+      <desc>
+        A distant energy source which gives off vast amounts of
+        radiation, including radio waves and X-rays.</desc>
+      <term>quasar</term>
+    </concept>
+
+  </concepts>
+
+</glossary>

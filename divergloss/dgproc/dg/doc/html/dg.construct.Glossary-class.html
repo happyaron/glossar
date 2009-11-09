@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dg.construct.Glossary</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dg-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="dg-module.html">Package&nbsp;dg</a> ::
+        <a href="dg.construct-module.html">Module&nbsp;construct</a> ::
+        Class&nbsp;Glossary
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Glossary</h1><p class="nomargin-top"></p>
+<pre class="base-tree">
+<a href="dg.construct.Gnode-class.html">Gnode</a> --+
+        |
+       <strong class="uidshort">Glossary</strong>
+</pre>
+
+<hr />
+<p>Root node of internal representation of the glossary.</p>
+  <p>Any element of the glossary may be reached through attributes and 
+  subattributes of objects of this class, accessed in the appropriate way 
+  for their types. Here is the hierachical overview, with type in 
+  parenthesis, an followed by <i>idem.</i> when the attribute has been 
+  detailed previously in another context:</p>
+<pre class="literalblock">
+   concepts (dict)
+       id (string)
+       topic (list of strings)
+       level (list of strings)
+       related (list of strings)
+       desc (d-set)
+           lang (string)
+           env (list of strings)
+           by (string)
+           src (string)
+           text (text)
+       term (d-set)
+           lang (string)
+           env (list of strings)
+           gr (string)
+           by (string)
+           src (string)
+           nom (g-node)
+               text (text)
+           stem (g-node)
+               text (text)
+           decl (list of g-nodes)
+               lang (string)
+               env (list of strings)
+               gr (string)
+               text (text)
+           comment (d-set)
+               lang (string)
+               env (list of strings)
+               by (string)
+               text (text)
+           origin (d-set)
+               lang (string)
+               env (list of strings)
+               by (string)
+               src (string)
+               text (text)
+       details (d-set)
+           lang (string)
+           env (list of strings)
+           root (string)
+           rel (string)
+           by (string)
+           text (text)
+       media (d-set)
+           lang (string)
+           env (list of strings)
+           root (string)
+           rel (string)
+           text (text)
+       comment (d-set) ibid.
+       origin (d-set) ibid.
+   languages (dict)
+       id (string)
+       name (d-set)
+           lang (string)
+           env (list of strings)
+           text (text)
+       shortname (d-set)
+           lang (string)
+           env (list of strings)
+           text (text)
+   environments (dict)
+       id (string)
+       weight (string)
+       meta (string)
+       closeto (list of strings)
+       name (d-set) ibid.
+       shortname (d-set) ibid.
+       desc (d-set) ibid.
+   editors (dict)
+       id (string)
+       name (d-set) ibid.
+       shortname (d-set) ibid.
+       desc (d-set) ibid.
+       email (g-node)
+           text (text)
+       affiliation (d-set)
+           lang (string)
+           env (list of strings)
+           text (text)
+   sources (dict)
+       id (string)
+       name (d-set) ibid.
+       shortname (d-set) ibid.
+       desc (d-set) ibid.
+       email (g-node) ibid.
+       url (g-node) text
+   topics (dict)
+       id (string)
+       name (d-set) ibid.
+       shortname (d-set) ibid.
+       desc (d-set) ibid.
+   levels (dict)
+       id (string)
+       name (d-set) ibid.
+       shortname (d-set) ibid.
+       desc (d-set) ibid.
+   grammar (dict)
+       id (string)
+       name (d-set) ibid.
+       shortname (d-set) ibid.
+       desc (d-set) ibid.
+   extroots (dict)
+       id (string)
+       name (d-set) ibid.
+       shortname (d-set) ibid.
+       desc (d-set) ibid.
+       rooturl (g-node)
+           text (text)
+       browseurl (g-node)
+           text (text)
+</pre>
+  <p>All <code>string</code> values are keys into one of the dictionaries. 
+  All <code>text</code> values are glossary texts of the structure as 
+  explained in the module overview.</p>
+  <p>For example, to reach the language name of the term of the concept 
+  with id <code>&quot;foo&quot;</code>, in language with id 
+  <code>&quot;lang&quot;</code> and environment with id 
+  <code>&quot;env&quot;</code>:</p>
+<pre class="literalblock">
+   langkey = gloss.concepts[&quot;foo&quot;].term(&quot;lang&quot;, &quot;env&quot;)[0].lang
+   langname = gloss.languages[langkey].name(&quot;lang&quot;, &quot;env&quot;)[0].text
+</pre>
+  <p>assuming that the term and language name are defined for given 
+  langenv.</p>
+  <p>If the glossary has no explicit environments or has a single 
+  environment, the environment id can be omitted in d-set element selection
+  calls; similarly, if there is a single language in the glossary, language
+  id may be omitted too. In fact, both may be omitted in any case, when 
+  default language and environment will be used if there are multiple.</p>
+
+<hr />
+<div class="fields">      <p><strong>Note:</strong>
+        At the moment, glossaries are mostly read-only; while elements can 
+        be added internally if convenient for processing, serializing a 
+        modified glossary is not implemented yet.
+      </p>
+</div><!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dg.construct.Glossary-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">node</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">node</span>=<span class="sig-default">None</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="dg.construct.Gnode-class.html#__init__">Gnode.__init__</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dg-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

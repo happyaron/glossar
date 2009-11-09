@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glossary SYSTEM "divergloss.dtd">
+
+<!-- Glossary key (the id attribute) is used by various tools
+     e.g. to derive file names, so keep it reasonable.
+     Glossary default language is given by a key (language code recommended),
+     in the lang attribute, which must be defined in key definitions. -->
+<glossary id="gloss" lang="zh">
+
+  <metadata>
+    <!-- Title of the glossary. -->
+    <title>语表</title>
+  </metadata>
+
+  <!-- Definitions of various keys used in the glossary. -->
+  <keydefs>
+    <languages>
+      <!-- Unique key, name and short name of each language. -->
+      <language id="en">
+        <name>英语</name>
+        <shortname>英</shortname>
+      </language>
+      <language id="zh">
+        <name>中文</name>
+        <shortname>中</shortname>
+      </language>
+    </languages>
+  </keydefs>
+
+  <!-- Concepts.
+       Each concept requires only a unique key in the id attribute, but
+       minimalistically it should additionally have some terms that name it,
+       possibly a description too. Descriptions can reference other
+       concepts using in-text <ref c="key">...</ref> markup. -->
+  <concepts>
+
+  <!-- Standard Actions -->
+

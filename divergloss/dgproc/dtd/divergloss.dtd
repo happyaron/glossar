@@ -1,0 +1,180 @@
+<!-- Divergloss glossary format -->
+
+<!-- Author:
+     Chusslove Illich (Часлав Илић) <caslav.ilic@gmx.net>
+     -->
+<!-- License: GPLv3 -->
+
+
+<!ENTITY % bool-true '(1|y|yes|t|true)'>
+<!ENTITY % bool-false '(0|n|no|f|false)'>
+
+<!-- Common attributes -->
+<!ENTITY % a-id 'id ID #REQUIRED'>
+<!ENTITY % a-lang 'lang IDREFS #IMPLIED'>
+<!ENTITY % a-env 'env IDREFS #IMPLIED'>
+<!ENTITY % a-by 'by IDREF #IMPLIED'>
+<!ENTITY % a-src 'src IDREF #IMPLIED'>
+<!ENTITY % a-gr 'gr IDREF #IMPLIED'>
+<!ENTITY % a-root 'root IDREF #IMPLIED'>
+<!ENTITY % a-rel 'rel CDATA #IMPLIED'>
+<!ENTITY % a-base 'xml:base CDATA #IMPLIED'>
+
+<!-- Element content for nodes with flat text -->
+<!ENTITY % ec-ftext '(#PCDATA|ref|em|ol|link)*'>
+
+<!-- Element content for nodes with structured text -->
+<!ENTITY % ec-stext '(para)*'>
+
+<!-- Common elements with text content -->
+
+<!ELEMENT desc %ec-ftext;>
+<!ATTLIST desc %a-lang; %a-env; %a-by; %a-src;>
+<!ELEMENT ldesc %ec-stext;>
+<!ATTLIST ldesc %a-lang; %a-env; %a-by; %a-src;>
+
+<!ELEMENT origin %ec-ftext;>
+<!ATTLIST origin %a-lang; %a-env; %a-by; %a-src;>
+<!ELEMENT lorigin %ec-stext;>
+<!ATTLIST lorigin %a-lang; %a-env; %a-by; %a-src;>
+
+<!ELEMENT comment %ec-ftext;>
+<!ATTLIST comment %a-lang; %a-env; %a-by;>
+<!ELEMENT lcomment %ec-stext;>
+<!ATTLIST lcomment %a-lang; %a-env; %a-by;>
+
+<!-- Markup within text content -->
+
+<!ELEMENT para %ec-ftext;>
+
+<!ELEMENT ref (#PCDATA|em|ol)*>
+<!ATTLIST ref c IDREF #REQUIRED>
+
+<!ELEMENT em (#PCDATA|ref|em|ol|link)*>
+
+<!ELEMENT ol (#PCDATA|ref|em|ol)*>
+<!ATTLIST ol lang IDREF #REQUIRED
+             wl %bool-true; #IMPLIED>
+
+<!ELEMENT link (#PCDATA|em|ol)*>
+<!ATTLIST link url CDATA #REQUIRED>
+
+<!-- Top element -->
+
+<!ELEMENT glossary (metadata,keydefs*,concepts+)>
+<!ATTLIST glossary %a-id; %a-lang; %a-env;
+                   xmlns:xi CDATA #FIXED "http://www.w3.org/2001/XInclude">
+
+<!-- Metadata -->
+
+<!ELEMENT metadata (title+,(desc|ldesc)*,version*,date?)>
+<!ATTLIST metadata %a-base;>
+
+<!ELEMENT title %ec-ftext;>
+<!ATTLIST title %a-lang; %a-env;>
+
+<!ELEMENT version (#PCDATA)>
+<!ATTLIST version %a-lang; %a-env;>
+
+<!ELEMENT date (#PCDATA)>
+
+<!-- Key definitions -->
+
+<!ELEMENT keydefs (languages?,environments?,editors?,sources?,topics?,
+                   levels?,grammar?,extroots?)>
+<!ATTLIST keydefs %a-base;>
+
+<!ELEMENT languages (language*)>
+<!ATTLIST languages %a-base;>
+<!ELEMENT language (name+,shortname+)>
+<!ATTLIST language %a-id;>
+
+<!ELEMENT environments (environment*)>
+<!ATTLIST environments %a-base;>
+<!ELEMENT environment (name+,shortname+,(desc|ldesc)+)>
+<!ATTLIST environment %a-id;
+                      closeto IDREFS #IMPLIED
+                      weight (0|1|2|3|4|5|6|7|8|9) "0"
+                      meta %bool-true; #IMPLIED>
+
+<!ELEMENT editors (editor*)>
+<!ATTLIST editors %a-base;>
+<!ELEMENT editor (name+,shortname+,email?,affiliation*,(desc|ldesc)*)>
+<!ATTLIST editor %a-id;>
+
+<!ELEMENT sources (source*)>
+<!ATTLIST sources %a-base;>
+<!ELEMENT source (name+,shortname+,url?,email?,(desc|ldesc)+)>
+<!ATTLIST source %a-id;>
+
+<!ELEMENT topics (topic*)>
+<!ATTLIST topics %a-base;>
+<!ELEMENT topic (name+,shortname+,(desc|ldesc)+)>
+<!ATTLIST topic %a-id;>
+
+<!ELEMENT levels (level*)>
+<!ATTLIST levels %a-base;>
+<!ELEMENT level (name+,shortname+,(desc|ldesc)*)>
+<!ATTLIST level %a-id;>
+
+<!ELEMENT grammar (gramm*)>
+<!ATTLIST grammar %a-base;>
+<!ELEMENT gramm (name+,shortname+,(desc|ldesc)*)>
+<!ATTLIST gramm %a-id;>
+
+<!ELEMENT extroots (extroot*)>
+<!ATTLIST extroots %a-base;>
+<!ELEMENT extroot (name+,shortname+,rooturl,browseurl?,(desc|ldesc)*)>
+<!ATTLIST extroot %a-id;>
+
+<!ELEMENT name %ec-ftext;>
+<!ATTLIST name %a-lang; %a-env;>
+
+<!ELEMENT shortname (#PCDATA)>
+<!ATTLIST shortname %a-lang; %a-env;>
+
+<!ELEMENT affiliation %ec-ftext;>
+<!ATTLIST affiliation %a-lang; %a-env;>
+
+<!ELEMENT url (#PCDATA)>
+
+<!ELEMENT email (#PCDATA)>
+
+<!ELEMENT rooturl (#PCDATA)>
+
+<!ELEMENT browseurl (#PCDATA)>
+
+<!-- Concepts -->
+
+<!ELEMENT concepts (concept*)>
+<!ATTLIST concepts %a-base;>
+
+<!ELEMENT concept ((desc|ldesc)*,(term|eterm)*,details*,media*,
+                   (origin|lorigin)*,(comment|lcomment)*)>
+<!ATTLIST concept %a-id;
+                  topic IDREFS #IMPLIED
+                  level IDREFS #IMPLIED
+                  related IDREFS #IMPLIED>
+
+<!ELEMENT term %ec-ftext;>
+<!ATTLIST term %a-lang; %a-env; %a-by; %a-src; %a-gr;>
+
+<!ELEMENT details %ec-ftext;>
+<!ATTLIST details %a-lang; %a-env; %a-by; %a-root; %a-rel;>
+
+<!ELEMENT media %ec-ftext;>
+<!ATTLIST media %a-lang; %a-env; %a-by; %a-root; %a-rel;>
+
+<!-- Extended terms -->
+
+<!ELEMENT eterm (nom,stem?,decl*,(origin|lorigin)*,(comment|lcomment)*)>
+<!ATTLIST eterm %a-lang; %a-env; %a-by; %a-src; %a-gr;>
+
+<!ELEMENT nom (#PCDATA)>
+
+<!ELEMENT stem (#PCDATA)>
+
+<!ELEMENT decl (#PCDATA)>
+<!ATTLIST decl %a-gr;>
+
+<!-- End of DTD -->

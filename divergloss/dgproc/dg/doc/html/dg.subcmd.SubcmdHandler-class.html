@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dg.subcmd.SubcmdHandler</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dg-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="dg-module.html">Package&nbsp;dg</a> ::
+        <a href="dg.subcmd-module.html">Module&nbsp;subcmd</a> ::
+        Class&nbsp;SubcmdHandler
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class SubcmdHandler</h1><p class="nomargin-top"></p>
+<pre class="base-tree">
+object --+
+         |
+        <strong class="uidshort">SubcmdHandler</strong>
+</pre>
+
+<hr />
+<p>Handle subcommands organized by categories.</p>
+  <p>Each category of subcommands is contained in its own package, where 
+  every submodule is one subcommand. The subcommand names as seen by the 
+  user are then the submodule names, minus the <code>.py</code> extension 
+  and every underscore converted to hyphen (e.g. module 
+  <code>my_subcmd.py</code> becomes <code>my-subcmd</code> subcommand).</p>
+  <p>The API expected out of a subcommand module is simple:</p>
+  <ul>
+    <li>
+      It must define the function <code>fill_optparser(parser_view)</code>,
+      where it registers subcommand description, parameters, etc,; the 
+      <code>parser_view</code> is a subcommand view from the <a 
+      href="dg.subcmd.SuboptParser-class.html" 
+      class="link">SuboptParser</a>, see below for its API.
+    </li>
+    <li>
+      A class named <code>Subcommand</code> must be defined. Its 
+      constructor takes, in order, the options (parameters) to the 
+      subcommand itself and the global options of the main command; both 
+      are simple objects with options as their attributes. This object will
+      be constructed by the handler and delivered to the client, so the 
+      rest of its API shold be designed for the particular application.
+    </li>
+  </ul>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list of tuples</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dg.subcmd.SubcmdHandler-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">subcmd_reg_bundle</span>)</span><br />
+      Constructor.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list of strings</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dg.subcmd.SubcmdHandler-class.html#subcmd_names" class="summary-sig-name">subcmd_names</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pack</span>)</span><br />
+      Names of all the subcommands found in the given category.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dg.subcmd.SubcmdHandler-class.html#subcmd_overview" class="summary-sig-name">subcmd_overview</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pack</span>,
+        <span class="summary-sig-arg">indent</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">wcol</span>=<span class="summary-sig-default">79</span>)</span><br />
+      Formatted list with names and short descriptions of all the 
+      subcommands in the given category.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list of lists</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dg.subcmd.SubcmdHandler-class.html#make_subcmds" class="summary-sig-name">make_subcmds</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">subcmd_init_bundle</span>,
+        <span class="summary-sig-arg">cmdline_options</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Create subcommand objects and parse and route parameters to them.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dg.subcmd.SubcmdHandler-class.html#help" class="summary-sig-name">help</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">help_req_bundle</span>)</span><br />
+      Produces a help string for the given subcommands by packages.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__str__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">subcmd_reg_bundle</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Constructor.</p>
+  <p>Registeres the subcommand categories, using a list where every element
+  is a tuple specifying a package and category name:</p>
+<pre class="literalblock">
+   import subcmds.foo
+   import subcmds.bar
+   ...
+   sch = SubcmdHandler([(subcmds.foo, &quot;Foos&quot;), (subcmds.bar, &quot;Bars&quot;)])
+</pre>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>subcmd_reg_bundle</code></strong> - subcommand registration bundle</li>
+    </ul></dd>
+    <dt>Returns: list of tuples</dt>
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="subcmd_names"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">subcmd_names</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pack</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Names of all the subcommands found in the given category.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pack</code></strong> (module) - subcommand package (one from the constructor bundle)</li>
+    </ul></dd>
+    <dt>Returns: list of strings</dt>
+        <dd>names of the subcommands found in the package</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="subcmd_overview"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">subcmd_overview</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pack</span>,
+        <span class="sig-arg">indent</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">wcol</span>=<span class="sig-default">79</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Formatted list with names and short descriptions of all the 
+  subcommands in the given category.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pack</code></strong> (module) - subcommand package (one from the constructor bundle)</li>
+        <li><strong class="pname"><code>indent</code></strong> (string) - indentation for the list</li>
+        <li><strong class="pname"><code>wcol</code></strong> (int) - column to wrap text at (&lt;= 0 for no wrapping)</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>formatted list</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="make_subcmds"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">make_subcmds</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">subcmd_init_bundle</span>,
+        <span class="sig-arg">cmdline_options</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create subcommand objects and parse and route parameters to them.</p>
+  <p>After the client has parsed its command line, collected the names of 
+  issued subcommands and the inbound parameters (specified by the 
+  collector-options), it calls this function to create the subcommands.</p>
+  <p>The initialization bundle is a list of tuples. Each tuple states the 
+  subcommand package of the issued subcommands, list of subcommand names 
+  from that package, and the raw parameters for those subcommands (list of 
+  arguments from the collector-option):</p>
+<pre class="literalblock">
+   subcmds = sch.init_subcmds(
+       [(subcmds.foo, # package
+         [&quot;foo-alpha&quot;, &quot;foo-beta&quot;], # subcommand names
+         [&quot;fpar1&quot;, &quot;fpar2:val&quot;, &quot;fpar3:val&quot;]), # raw parameters
+        (subcmds.bar,
+         [&quot;bar-sierra&quot;],
+         [&quot;bpar1&quot;, &quot;bpar2:val&quot;])])
+</pre>
+  <p>The packages given here must be a subset of those that were given to 
+  the constructor, and subcommands a subset of those that the constructor 
+  found inside the packages.</p>
+  <p>If everything goes well -- all subcommands exist, no parameter errors 
+  -- then the subcommand objects are created from the subcommand modules, 
+  and returned in a list of lists, according to the ordering of subcommand 
+  names in the initialization bundle.</p>
+  <p>All options that the main command received, in the form of object with
+  attributes (e.g. as created by <code>optparse.OptionParser</code>) may 
+  also be routed to the subcommands if desired. This may be useful for 
+  subcommands to heed standard options like quiet, verbose, etc.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>subcmd_init_bundle</code></strong> (list of tuples) - subcommand initialization bundle</li>
+        <li><strong class="pname"><code>cmdline_options</code></strong> (object) - global options</li>
+    </ul></dd>
+    <dt>Returns: list of lists</dt>
+        <dd>subcommand object</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="help"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">help</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">help_req_bundle</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Produces a help string for the given subcommands by packages.</p>
+  <p>The request bundle is a list, where each element is a tuple stating a 
+  subcommand package and list of subcommand names.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>help_req_bundle</code></strong> (list of tuples) - request bundle</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>formatted help</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dg-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

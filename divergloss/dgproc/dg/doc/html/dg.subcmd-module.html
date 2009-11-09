@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dg.subcmd</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dg-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="dg-module.html">Package&nbsp;dg</a> ::
+        Module&nbsp;subcmd
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module subcmd</h1><p class="nomargin-top"></p>
+<p>Handle subcommands and their parameters.</p>
+  <p>Subcommands are putting main command into different modes of 
+  operation. Main commands with subcommands are typical of package 
+  managers, version control systems, etc. This module provides a handler to
+  conveniently load subcommands on demand, and parser to extract and route 
+  parameters to them from the command line.</p>
+  <p>The command line interface consists of having subcommand a free 
+  parameter, and a special collector-option to collect parameters for the 
+  subcommand:</p>
+<pre class="literalblock">
+   $ cmd -a -b -c \  # command and any usual options
+         subcmd \    # subcommand
+         -s foo \    # subcommand parameter 'foo', without value (flag)
+         -s bar:xyz  # subcommand parameter 'bar', with the value 'xyz'
+</pre>
+  <p>where <code>-s</code> is the collector-option, repeated for as many 
+  subcommand parameters as needed. The collector-option can be freely 
+  positioned in the command line, before or after the subcommand name, and 
+  mixed with other options.</p>
+  <p>The format of subcommand parameter is either <code>param</code> for 
+  flag parameters, <code>param:value</code> for parameters taking a value, 
+  or <code>param:value1,value2,...</code> for parameters taking a list of 
+  values. Instead of, or in addition to using comma-separated string to 
+  represent the list, some parameters can be repeated on the command line, 
+  and all the values collected to make the list.</p>
+  <p>Several subcommands may be given too, in which case a each subcommand 
+  parameter is routed to every subcommand which expects it. This means that
+  all those subcommands should place the same semantics into the same-named
+  parameter they are using. On the other hand, there may be two or more 
+  <i>categories</i> of subcommands, each with its own collector-option:</p>
+<pre class="literalblock">
+   $ cmd -a -c -b \ 
+         catx-subcmd \  # subcommand in category z
+         -x foo \       # subcommand parameter for category z
+         caty-subcmd \  # subcommand in category y
+         -y bar:xyz     # subcommand parameter for category y
+</pre>
+  <p>where again the order of issue of collector-options is 
+  insignificant.</p>
+  <p>There are two ways to handle subcommands and their parameters. One way
+  is to handle both with the functionality in this module, using the <a 
+  href="dg.subcmd.SubcmdHandler-class.html" class="link">SubcmdHandler</a>,
+  which puts some organizational and API requirements on subcommands. 
+  Another way is to use only the parameter parsers for subcommands, the <a 
+  href="dg.subcmd.SuboptParser-class.html" class="link">SuboptParser</a> 
+  class, and otherwise handle subcommands in a custom manner.</p>
+
+<hr />
+<div class="fields">      <p><strong>Note:</strong>
+        For any of the methods in this module, the order of keyword 
+        parameters is not guaranteed. Always name them in calls.
+      </p>
+      <p><strong>Author:</strong>
+        Chusslove Illich (&#1063;&#1072;&#1089;&#1083;&#1072;&#1074; &#1048;&#1083;&#1080;&#1115;) &lt;caslav.ilic@gmx.net&gt;
+      </p>
+      <p><strong>License:</strong>
+        GPLv3
+      </p>
+</div><!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Classes</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.subcmd.SubcmdHandler-class.html" class="summary-name">SubcmdHandler</a><br />
+      Handle subcommands organized by categories.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.subcmd.SuboptParser-class.html" class="summary-name">SuboptParser</a><br />
+      The suboption parser.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.subcmd.SubcmdView-class.html" class="summary-name">SubcmdView</a><br />
+      The view of a particular subcommand in an suboption parser.
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dg-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

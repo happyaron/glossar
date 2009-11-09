@@ -1,0 +1,12 @@
+-- Provisional catalog, not used at the moment --
+
+-- Prefer public to system ID --
+OVERRIDE YES
+
+-- Latest version --
+PUBLIC "-//CI//DTD Divergloss//EN"
+       "file:///home/caslav/Project/divergloss/dgproc/dtd/divergloss.dtd"
+
+SYSTEM "divergloss.dtd"
+       "file:///home/caslav/Project/divergloss/dgproc/dtd/divergloss.dtd"
+

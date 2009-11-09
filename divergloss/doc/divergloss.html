@@ -1,0 +1,719 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="HTML Tidy for Linux/x86 (vers 6 November 2007), see www.w3.org">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>The Divergloss XML</title>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.73.2">
+<meta name="description" content="This document informally describes the Divergloss XML format. It can be read as a tutorial and usage guide to Divergloss, with some design rationales provided along the way. Divergloss is work in progress, and should be considered experimental at this moment.">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="article" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title"><a name="id2704747" id="id2704747"></a>The Divergloss XML</h2>
+</div>
+<div>
+<div class="authorgroup">
+<div class="author">
+<h3 class="author"><span class="firstname">Chusslove</span> <span class="surname">Illich</span></h3>
+<code class="email">&lt;<a class="email" href="mailto:caslav.ilic@gmx.net">caslav.ilic@gmx.net</a>&gt;</code></div>
+</div>
+</div>
+<div>
+<p class="copyright">Copyright © 2008 Chusslove Illich (Часлав Илић)</p>
+</div>
+<div>
+<div class="legalnotice"><a name="id2779534" id="id2779534"></a>
+<p>Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.2.</p>
+</div>
+</div>
+<div>
+<div class="revhistory">
+<table border="1" width="100%" summary="Revision history">
+<tr>
+<th align="left" valign="top" colspan="3"><b>Revision History</b></th>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">2008-09-16</td>
+<td>&nbsp;</td>
+</tr>
+<tr>
+<td align="left" colspan="3">Last modification (repository rev. c2188bc583a4ccd1594a9ca75575b6c203f1b230).</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">2008-02-18</td>
+<td align="left">CI</td>
+</tr>
+<tr>
+<td align="left" colspan="3">Writing started.</td>
+</tr>
+</table>
+</div>
+</div>
+<div>
+<div class="abstract">
+<p class="title"><b>Abstract</b></p>
+<p>This document informally describes the Divergloss XML format. It can be read as a tutorial and usage guide to Divergloss, with some design rationales provided along the way.</p>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p>Divergloss is work in progress, and should be considered experimental at this moment.</p>
+</div>
+</div>
+</div>
+</div>
+<hr></div>
+<div class="toc">
+<p><b>Table of Contents</b></p>
+<dl>
+<dt><span class="sect1"><a href="#s-descons">1. Design Considerations</a></span></dt>
+<dt><span class="sect1"><a href="#s-basics">2. Basics</a></span></dt>
+<dt><span class="sect1"><a href="#s-topstruct">3. Top Structure</a></span></dt>
+<dt><span class="sect1"><a href="#s-concepts">4. Concepts</a></span></dt>
+<dt><span class="sect1"><a href="#s-terms">5. Terms</a></span></dt>
+<dt><span class="sect1"><a href="#s-keydefs">6. Key Definitions</a></span></dt>
+<dt><span class="sect1"><a href="#s-textfmt">7. Text Markup</a></span></dt>
+<dt><span class="appendix"><a href="#a-dgdistro">A. Distribution</a></span></dt>
+<dt><span class="appendix"><a href="#a-ack">B. Acknowledgments</a></span></dt>
+</dl>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both"><a name="s-descons" id="s-descons"></a>1.&nbsp;Design Considerations</h2>
+</div>
+</div>
+</div>
+<p>Divergloss, short of "Diversity Glossary", is an instance of XML for handling glossary data -- succinct descriptions connected with terms which name certain concepts. A necessary question to answer up front is, why yet another XML format for glossaries? For example, there is the <a class="ulink" href="http://www.lisa.org/standards/tbx/" target="_top">TBX</a> format ("TermBase eXchange") by LISA, used widely in localization industry and submitted for adoption as ISO standard. Another option is the glossary document type of the <a class="ulink" href="http://www.docbook.org/" target="_top">Docbook</a> format. To answer this, we must consider the goals behind Divergloss:</p>
+<div class="itemizedlist">
+<ul type="disc">
+<li>
+<p>Producers of glossaries should not need in-depth understanding of linguistics or markup languages. The glossary data comes from "ordinary" fields, rather than e.g. linguistic research or natural language AI.</p>
+</li>
+<li>
+<p>Advanced glossary features are hidden when not needed, rather than requiring a lot of scaffolding for simple glossaries. This relates to both the format as such, and tools needed to validate and produce it.</p>
+</li>
+<li>
+<p>The format should be well human readable and editable. While special GUI applications can present glossary data in nicer form for user consumption, the plain XML source should make intuitive sense.</p>
+</li>
+<li>
+<p>The same glossary may be used in various contexts within same language. There may be several terms naming the same concept, not only synonymously, but according to the user's environment. The same holds for the concept descriptions.</p>
+</li>
+<li>
+<p>Glossaries should evolve by contributions of many people, and be updated according to various external sources of glossary data. A form of version control on the file level is assumed, but some intrinsic support for this process should be provided as well.</p>
+</li>
+</ul>
+</div>
+<p>Conversely, Divergloss does not place much importance into the following:</p>
+<div class="itemizedlist">
+<ul type="disc">
+<li>
+<p>Wide generality, with features for custom specialization according to the field and desired levels of representation depth. Instead, common needs are supported by many built-in tags in a rather flat hierarchy.</p>
+</li>
+<li>
+<p>Strict adherence to the XML data representation practices, when these would impair readability and editability. For example, some records may be encoded as special strings, rather than long sequences of nodes and subnodes.</p>
+</li>
+</ul>
+</div>
+<p>In essence, Divergloss favors simplicity, ease of getting involved both in terms of cognitive effort and needed tools, at the expense of generality and formal correctness as viewed from pure data-encoding standpoint. This is in contrast with the aforementioned TBX, which is intended as end-all of glossary formats, and in practice mostly handled through features of dedicated glossary or CAT (Computer-Aided Translation) tools. Docbook glossary format, on the other hand, while offering similar simplicity, is too lightweight to cover all envisaged uses of Divergloss.</p>
+<p>It is, however, possible that Divergloss could be made an instance of TBX, i.e. one of its XCS ("eXtensible Constraint Specification") customizations. This would facilitate the conversion of Divergloss into TBX glossaries, for use by existing CAT tools. Some sort of conversion to TBX is, of course, possible in any case, but no effort to that end has been undertaken as of yet.</p>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both"><a name="s-basics" id="s-basics"></a>2.&nbsp;Basics</h2>
+</div>
+</div>
+</div>
+<p>Divergloss strives for language neutrality. There is no limitation on how many languages, and precisely in which fashion, may a single glossary document support. This need is highly dependent on locale and field of use: a glossary of pre-Columbian civilizations for American users may get away fully monolingual, a glossary of oceanic freight for German users may state English terms too, while a glossary of astronomy for Tunisian users may need to be fully Arabic-French bilingual (both descriptions and terms).</p>
+<p>Within each language, Divergloss supports another level of diversity: in different environments, e.g. within two large companies doing similar business, same concepts may be named differently. An outsider may thus consider them synonymous, but a user within one of those environments should be primarily presented with the term native to it. "Fully" synonymous terms, in this sense, will have both the language and the environment same.</p>
+<p>Aside from language and environment, each description and term can be equipped with a myriad of supplementary data. For example, the description may have an additional comment on source of the text, while a base term may come with few declinations which would be hard for user to guess by general rules of the language.</p>
+<p>Bearing previous passages in mind, the entries in Divergloss documents are organized by <span class="emphasis"><em>concepts</em></span>, not apriori linked to any of the terms. Instead, each concept is referenced by a unique key, and contains any number of descriptions and terms. Here is the simplest example of glossary with two terms in it:</p>
+<pre class="programlisting">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;glossary id="cosmogloss" lang="en"&gt;
+
+  &lt;metadata&gt;
+    &lt;title&gt;A Short Cosmic Glossary&lt;/title&gt;
+  &lt;/metadata&gt;
+
+  &lt;keydefs&gt;
+    &lt;languages&gt;
+      &lt;language id="en"&gt;
+        &lt;name&gt;English&lt;/name&gt;
+        &lt;shortname&gt;En.&lt;/shortname&gt;
+      &lt;/language&gt;
+    &lt;/languages&gt;
+  &lt;/keydefs&gt;
+
+  &lt;concepts&gt;
+
+    &lt;concept id="blackhole"&gt;
+      &lt;desc&gt;
+        The leftover core of a super massive star after a supernova,
+        that exerts a tremendous gravitational pull.&lt;/desc&gt;
+      &lt;term&gt;black hole&lt;/term&gt;
+    &lt;/concept&gt;
+
+    &lt;concept id="quasar"&gt;
+      &lt;desc&gt;
+        A distant energy source which gives off vast amounts of
+        radiation, including radio waves and X-rays.&lt;/desc&gt;
+      &lt;term&gt;quasar&lt;/term&gt;
+    &lt;/concept&gt;
+
+  &lt;/concepts&gt;
+
+&lt;/glossary&gt;
+</pre>
+<p>The <code class="literal">glossary</code> top node states the unique glossary identifier, by the <code class="literal">id</code> attribute. The default language used in the glossary is given by <code class="literal">lang</code> attribute, which applies to all text in the document where not locally overridden. <a class="link" href="#p-metadata">The <code class="literal">metadata</code> node</a> contains general info about the glossary, like title, description, etc. All keys in a Divergloss glossary, such as the language value to the <code class="literal">lang</code> attributes, are defined by the <a class="link" href="#s-keydefs" title="6.&nbsp;Key Definitions">the <code class="literal">keydefs</code> node</a>.</p>
+<p>Glossary entries are grouped under <a class="link" href="#s-concepts" title="4.&nbsp;Concepts">the <code class="literal">concepts</code> node</a>. Each <code class="literal">concept</code> node has an <code class="literal">id</code> attribute, a key which uniquely defines the concept. Each concept can contain any number of descriptions and terms, defined by <code class="literal">desc</code> and <code class="literal">term</code> nodes; each may override the default language using the <code class="literal">lang</code> attribute.</p>
+<p><a name="p-attr-lang" id="p-attr-lang"></a>Let us now add terms in few other languages:</p>
+<pre class="programlisting">
+&lt;concept id="blackhole"&gt;
+  &lt;desc&gt;
+    The leftover core of a super massive star after a supernova,
+    that exerts a tremendous gravitational pull.&lt;/desc&gt;
+  &lt;term&gt;black hole&lt;/term&gt;
+  &lt;term lang="fr"&gt;trou noir&lt;/term&gt;
+  &lt;term lang="de"&gt;Schwarzes Loch&lt;/term&gt;
+&lt;/concept&gt;
+</pre>
+<p>The term without a <code class="literal">lang</code> attribute is in English, which was stated as the default language, whereas the two other terms override the language to French and German. In a fully multilingual case, description nodes too could be stated in several languages in the same way.</p>
+<p><a name="p-attr-env" id="p-attr-env"></a>How about different environments? Here's a tentative example from a computer glossary:</p>
+<pre class="programlisting">
+&lt;concept id="directory"&gt;
+  &lt;desc&gt;
+    An entity in a file system which contains a group of files
+    and other directories.&lt;/desc&gt;
+  &lt;term&gt;directory&lt;/term&gt;
+  &lt;term env="mac"&gt;folder&lt;/term&gt;
+  &lt;term env="amiga"&gt;drawer&lt;/term&gt;
+&lt;/concept&gt;
+</pre>
+<p>Here, the first term, as before, defines no environment. Other two terms define an environment by use of <code class="literal">env</code> attribute. The value of <code class="literal">env</code> attribute is not a text that may be shown to the user, but an environment key. It must be defined elsewhere in the document, together with proper environment name (see <a class="link" href="#kd-environments">the <code class="literal">environments</code> node</a>). Same as with language, it depends on the client how the environment information will be used when presenting concepts to the user. For example, if the user is reading the glossary on an Amiga, the application may show "drawer" as primary term.</p>
+<p>In the last example, the description text itself mentioned the word "directories". If the user is using an Amiga, shouldn't he see "drawers" instead? When this occurs in a multienvironment glossary, the descriptions too can be specialized by environment. Furthermore, the terms should be properly crossreferenced, so that the client may allow the user to click on the term in description and go to corresponding concept. Putting it all together, we get: <a name="pl-desc-by-env" id="pl-desc-by-env"></a></p>
+<pre class="programlisting">
+&lt;concept id="directory"&gt;
+  &lt;desc&gt;
+    An entity in a &lt;ref c="filesystem"&gt;file system&lt;/r&gt; which contains
+    a group of &lt;ref c="file"&gt;files&lt;/r&gt; and other directories.&lt;/desc&gt;
+  &lt;desc env="mac"&gt;
+    An entity in a &lt;ref c="filesystem"&gt;file system&lt;/r&gt; which contains
+    a group of &lt;ref c="file"&gt;files&lt;/r&gt; and other folders.&lt;/desc&gt;
+  &lt;desc env="amiga"&gt;
+    An entity in a &lt;ref c="filesystem"&gt;file system&lt;/r&gt; which contains
+    a group of &lt;ref c="file"&gt;files&lt;/r&gt; and other drawers.&lt;/desc&gt;
+  &lt;term&gt;directory&lt;/term&gt;
+  &lt;term env="mac"&gt;folder&lt;/term&gt;
+  &lt;term env="amiga"&gt;drawer&lt;/term&gt;
+&lt;/concept&gt;
+</pre>
+<p>The reference node tag <code class="literal">ref</code> points to a concept key by its <code class="literal">c</code> attribute. If duplication of descriptions due to different terms by environment is to be frequently expected, alternatively the terse <a class="link" href="#text-sel-by-env">embedded selection</a> can be used.</p>
+<p><a name="p-attr-by" id="p-attr-by"></a>Descriptions and terms may also credit the person who <span class="emphasis"><em>added</em></span> them into the glossary. This person is an editor of the glossary, not necessarily the one who wrote the description, or coined the term. The editor's credit is assigned using the <code class="literal">by</code> attribute, for example:</p>
+<pre class="programlisting">
+&lt;desc by="hal"&gt;
+  An instruction by a superior factor which, if improperly formulated,
+  can cause a sentient being to undertake unethical actions.&lt;/desc&gt;
+&lt;term by="hal"&gt;order&lt;/term&gt;
+</pre>
+<p>where <code class="literal">"hal"</code> is the person key, possibly made out of the person's initials. These keys and corresponding editors' real names and contact data are defined within <a class="link" href="#kd-editors">the <code class="literal">editors</code> node</a>.</p>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both"><a name="s-topstruct" id="s-topstruct"></a>3.&nbsp;Top Structure</h2>
+</div>
+</div>
+</div>
+<p>A Divergloss document is divided into the following top-level sections:</p>
+<pre class="programlisting">
+&lt;glossary id="glosskey" lang="xx" env="yyyy"&gt;
+  &lt;metadata&gt;
+    ...
+  &lt;/metadata&gt;
+
+  &lt;keydefs&gt;
+    ...
+  &lt;/keydefs&gt;
+
+  &lt;concepts&gt;
+    ...
+  &lt;/concepts&gt;
+&lt;/glossary&gt;
+</pre>
+<p>A particular combination of values to <code class="literal">id</code>, <code class="literal">lang</code>, and <code class="literal">env</code> attributes, should uniquely determine the glossary within the ecosystem of other published Divergloss glossaries. The <code class="literal">lang</code> and <code class="literal">env</code> attributes are not mandatory; if provided, their values apply to all subnodes where meaningfull and not locally overridden.</p>
+<p><a name="p-metadata" id="p-metadata"></a>The <code class="literal">metadata</code> node provides information about the glossary in general. These include the following child nodes:</p>
+<div class="variablelist">
+<dl>
+<dt><span class="term"><code class="literal">title</code></span></dt>
+<dd>
+<p>The title of the glossary.</p>
+</dd>
+<dt><span class="term"><code class="literal">desc</code></span></dt>
+<dd>
+<p>The description of the glossary.</p>
+</dd>
+<dt><span class="term"><code class="literal">version</code></span></dt>
+<dd>
+<p>The release version. There are no constraints or recommendations on the versioning scheme.</p>
+</dd>
+<dt><span class="term"><code class="literal">date</code></span></dt>
+<dd>
+<p>The release date. The format is YYYY-MM-DD regardless of the languages of the glossary; it is client's duty to format for presentation according to user's locale.</p>
+</dd>
+</dl>
+</div>
+<p>All child nodes except the <code class="literal">title</code> are optional. The <code class="literal">title</code> and <code class="literal">desc</code> can have the attributes of language (<code class="literal">lang</code>) and environment (<code class="literal">env</code>), and can be repeated for unique combinations of those. The values of these attributes are keys defined by <a class="link" href="#s-keydefs" title="6.&nbsp;Key Definitions">the <code class="literal">keydefs</code> node</a>.</p>
+<p>The main body of the glossary, concepts and terms naming them, is given by <a class="link" href="#s-concepts" title="4.&nbsp;Concepts">the <code class="literal">concepts</code> node</a>. This node is mandatory -- not much point in a glossary without a single concept.</p>
+<p>Within metadata and concepts, many keyword-valued attributes may be used, which denote global data in the glossary: languages, environments, editors, topics, etc. These keywords are defined by the <a class="link" href="#s-keydefs" title="6.&nbsp;Key Definitions">the <code class="literal">keydefs</code> node</a>, where also the user-presentable info on them is stated. This node is not mandatory, but will be needed for all but the simplest glossaries.</p>
+<p><code class="literal">keydefs</code> and <code class="literal">concepts</code> nodes can actually appear more than once, each instance containing the data as described previously. In this way the document can be chunked into files, such that each file can still remain a valid XML. E.g. files containing groups of concepts, categorized in some way, can all start with their own <code class="literal">concepts</code> root element.</p>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both"><a name="s-concepts" id="s-concepts"></a>4.&nbsp;Concepts</h2>
+</div>
+</div>
+</div>
+<p>Concept nodes reside within the <code class="literal">concepts</code> node of the glossary:</p>
+<pre class="programlisting">
+&lt;glossary id="glosskey" lang="en"&gt;
+  ...
+  &lt;concepts&gt;
+
+    &lt;concept id="ckey1"&gt;
+      ...
+    &lt;/concept&gt;
+
+    &lt;concept id="ckey2"&gt;
+      ...
+    &lt;/concept&gt;
+
+    ...
+
+  &lt;/concepts&gt;
+  ...
+&lt;/glossary&gt;
+</pre>
+<p>The ordering of concepts is not important, and each concept key, given by <code class="literal">id</code> attribute, must be unique. The keys are best chosen mnemonically, for easier crossreferencing.</p>
+<p>The concept node may have the following optional attributes:</p>
+<div class="variablelist">
+<dl>
+<dt><span class="term"><code class="literal">topic</code></span></dt>
+<dd>
+<p>A list of topic keys under which this concept may be grouped. The topic keys and names are defined within <a class="link" href="#kd-topics">the <code class="literal">topics</code> node</a>.</p>
+</dd>
+<dt><span class="term"><code class="literal">level</code></span></dt>
+<dd>
+<p>Usage level of the concept, as in basic, intermediate, advanced, etc. among the users of the terminology described by the glossary. The level value is a key, defined with corresponding level name by <a class="link" href="#kd-levels">the <code class="literal">levels</code> node</a>.</p>
+</dd>
+<dt><span class="term"><code class="literal">related</code></span></dt>
+<dd>
+<p>Reference to closely related concepts, given by a list of concept keys.</p>
+</dd>
+</dl>
+</div>
+<p>An example of a concept node equipped with several attributes:</p>
+<pre class="programlisting">
+&lt;concept id="saturnv"
+         topic="apollo spacerace" level="newbie" related="n1 proton"&gt;
+  &lt;desc&gt;
+    A multistage liquid-fuel expendable rocket used by NASA's Apollo
+    and Skylab programs. Popularly known as the Moon Rocket.&lt;/desc&gt;
+  &lt;term&gt;Saturn V&lt;/term&gt;
+&lt;/concept&gt;
+</pre>
+<p>All children nodes of the concept may have the attributes <a class="link" href="#p-attr-lang"><code class="literal">lang</code></a>, <a class="link" href="#p-attr-env"><code class="literal">env</code></a>, and <a class="link" href="#p-attr-by"><code class="literal">by</code></a>. The client should use these attributes to decide, possibly based on the execution environment, how and which information to present to the user.</p>
+<p><a name="p-attr-src" id="p-attr-src"></a>Furthermore, description and term nodes may have the <code class="literal">src</code> attribute, which unlike the <code class="literal">by</code> attribute, defines the source of description or term: another glossary, publication in the field, etc. The source value is a key, with the source data behind it defined by <a class="link" href="#kd-sources">the <code class="literal">sources</code> node</a>.</p>
+<p>There can be one or several description nodes, or even none. When two descriptions have the same values of <code class="literal">lang</code> and <code class="literal">env</code> attributes, they are to be considered as different takes at same explanation. Similarly, the concept may be named by one or several terms (with term nodes being detailed in <a class="link" href="#s-terms" title="5.&nbsp;Terms">their own section</a>); but there may also be no terms, for concepts which are as of yet unnamed. The following is a valid concept definition:</p>
+<pre class="programlisting">
+&lt;concept id="alexq" topic="arch"&gt;
+  &lt;desc&gt;The quality without a name.&lt;/desc&gt;
+&lt;/concept&gt;
+</pre>
+<p>Other than descriptions and terms, concept node can have the following children nodes:</p>
+<div class="variablelist">
+<dl>
+<dt><span class="term"><code class="literal">details</code></span></dt>
+<dd>
+<p>Reference to external information about the concept, explaining concept in more details. The source of the information is pointed to using two attributes: the <code class="literal">rel</code> attribute states the relative path, while the <code class="literal">root</code> attribute is a key identifying the root of the path. The root keys and related names and data retrieval instructions are defined in the <a class="link" href="#kd-extroots">the <code class="literal">extroots</code> node</a>. The text content of the node, if non-empty, is a free-form remark (only for special cases, generally not necessary).</p>
+</dd>
+<dt><span class="term"><code class="literal">media</code></span></dt>
+<dd>
+<p>Non-text resource of value to the conveyance of the concept. This could be, for example, an image of the embodiment of the concept. The media file is pointed to with attributes just like for the <code class="literal">details</code> node. The text content is the caption of the data, which can be empty, but should be provided nevertheless.</p>
+</dd>
+<dt><span class="term"><code class="literal">origin</code></span></dt>
+<dd>
+<p>Information on when, where, how, and by whom the concept was originally formulated, introduced, or demonstrated.</p>
+</dd>
+<dt><span class="term"><code class="literal">comment</code></span></dt>
+<dd>
+<p>Editor's comment on the concept. For example, doubts on the accuracy or wording of the description, topic qualification, etc. Several editors may add their own comments.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both"><a name="s-terms" id="s-terms"></a>5.&nbsp;Terms</h2>
+</div>
+</div>
+</div>
+<p>Each concept may be named by several terms, given by <code class="literal">term</code> child node of <code class="literal">concept</code> node. In the simplest case of a traditional glossary, these terms would be synonymous. In a Divergloss glossary, clients should consider as synonymous only those terms with equal language and environment attributes.</p>
+<p>All attributes to the <code class="literal">term</code> node are optional, and are as follows:</p>
+<div class="variablelist">
+<dl>
+<dt><span class="term"><code class="literal">lang</code></span></dt>
+<dd>
+<p>The language of the term. The value is a list of language codes, as defined by <a class="link" href="#kd-languages">the <code class="literal">languages</code> node</a>.</p>
+</dd>
+<dt><span class="term"><code class="literal">env</code></span></dt>
+<dd>
+<p>The environment in which this term is used. The value is a list of environment keys, as defined by <a class="link" href="#kd-environments">the <code class="literal">environments</code> node</a>.</p>
+</dd>
+<dt><span class="term"><code class="literal">by</code></span></dt>
+<dd>
+<p>The editor who added the term into the glossary. Value is a key defined by <a class="link" href="#kd-editors">the <code class="literal">editors</code> node</a>.</p>
+</dd>
+<dt><span class="term"><code class="literal">src</code></span></dt>
+<dd>
+<p>The source of the term: an organization, publication, another glossary, a person. The value is a list of source keys, as defined by <a class="link" href="#kd-sources">the <code class="literal">sources</code> node</a>.</p>
+</dd>
+<dt><span class="term"><code class="literal">gr</code></span></dt>
+<dd>
+<p>Any grammatical categories to which the term may belong. These can be, for example, gender for a noun, aspect for a verb, etc. The value is a list of category keys, defined by <a class="link" href="#kd-grammar">the <code class="literal">grammar</code> node</a>.</p>
+</dd>
+</dl>
+</div>
+<p>Terms may sometimes need additional information, in which case the extended <code class="literal">eterm</code> node is used. It has the same attributes as the ordinary <code class="literal">term</code> node, but branches into child nodes, where the nominal form of the term is stated by the <code class="literal">nom</code> child node:</p>
+<pre class="programlisting">
+&lt;eterm&gt;
+  &lt;nom&gt;phenomenon&lt;/nom&gt;
+  ...
+&lt;/eterm&gt;
+</pre>
+<p>Other, optional child nodes of the extended term include:</p>
+<div class="variablelist">
+<dl>
+<dt><span class="term"><code class="literal">stem</code></span></dt>
+<dd>
+<p>Especially for inflected languages, it may be useful to know the stem of the nominal form of the term. Clients may use it for processing user queries into the glossary. Only one stem node is allowed.</p>
+</dd>
+<dt><span class="term"><code class="literal">decl</code></span></dt>
+<dd>
+<p>A particular declension of the term: cases, genders, moods, etc. The declension category is stated by the mandatory <code class="literal">gr</code> attribute (like for the <code class="literal">term</code> node itself), which holds one of the grammar keys defined <a class="link" href="#kd-grammar">the <code class="literal">grammar</code> node</a>. There can be as many declension nodes as needed. Several declensions may be of the same grammar category, which means that they are all an acceptable variation of that category.</p>
+</dd>
+<dt><span class="term">origin</span></dt>
+<dd>
+<p>Text describing the history behind the term. Optional attributes are <code class="literal">by</code> (the editor who added the text), <code class="literal">src</code> as the key of the source from where the information was obtained, as well as <code class="literal">lang</code> and <code class="literal">env</code> when differing from that of the term. There can be more than one origin node, possibly offering alternative views.</p>
+</dd>
+<dt><span class="term">comment</span></dt>
+<dd>
+<p>Editor's comment on the term. Optional attributes are <code class="literal">by</code>, stating the editor's key, and <code class="literal">lang</code> and <code class="literal">env</code>, in case the language or environment of the comment are different from that of the term. There can be several comments, by the same or different editors.</p>
+</dd>
+</dl>
+</div>
+<p>An example of a term with some of the extended data:</p>
+<pre class="programlisting">
+&lt;eterm&gt;
+  &lt;nom&gt;phenomenon&lt;/nom&gt;
+  &lt;decl gr="plu"&gt;phenomena&lt;/decl&gt;
+  &lt;stem&gt;phenomen&lt;/stem&gt;
+  &lt;origin src="dictcom"&gt;
+    From Greek "phainómenon", over Late Latin "phaenomenon",
+    to appear.&lt;/origin&gt;
+&lt;/eterm&gt;
+</pre></div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both"><a name="s-keydefs" id="s-keydefs"></a>6.&nbsp;Key Definitions</h2>
+</div>
+</div>
+</div>
+<p>All the various keys used in concepts and terms are collected and defined within this node, by sections:</p>
+<pre class="programlisting">
+&lt;keydefs&gt;
+  &lt;languages&gt;
+    ...
+  &lt;/languages&gt;
+  &lt;environments&gt;
+    ...
+  &lt;/environments&gt;
+  ...
+&lt;/keydefs&gt;
+</pre>
+<p>The keys themselves are always defined by the <code class="literal">id</code> attribute of the respective key definition node.</p>
+<p>Each node that has a text value, within any of the key definition sections, may be equipped with <code class="literal">lang</code> and <code class="literal">env</code> attributes, and repeated for different combinations of them. Clients should use this info to select the text to present to the user as a description behind a particular key.</p>
+<p>The key definition sections are as follows:</p>
+<div class="variablelist">
+<dl>
+<dt><a name="kd-languages" id="kd-languages"></a><span class="term"><code class="literal">languages</code></span></dt>
+<dd>
+<p>The languages used within the glossary, as applied by the <code class="literal">lang</code> attribute. The definition of a language provides its full and short name:</p>
+<pre class="programlisting">
+&lt;languages&gt;
+  &lt;language id="en"&gt;
+    &lt;name&gt;English&lt;/name&gt;
+    &lt;shortname&gt;En.&lt;/shortname&gt;
+  &lt;/language&gt;
+  &lt;language id="fr"&gt;
+    &lt;name&gt;French&lt;/name&gt;
+    &lt;shortname&gt;Fr.&lt;/shortname&gt;
+  &lt;/language&gt;
+  ...
+&lt;/languages&gt;
+</pre>
+<p>Language identifiers should follow the codes from <a class="ulink" href="http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes" target="_top">ISO 639</a>, when available. This is important for relating the language to a system locale, such that language-dependent processing (e.g. alphabetical sorting) may be correctly performed.</p>
+</dd>
+<dt><a name="kd-environments" id="kd-environments"></a><span class="term"><code class="literal">environments</code></span></dt>
+<dd>
+<p>Usage environments for text content, as applied by the <code class="literal">env</code> attribute. For each environment the full and short name are given, and the description of the environment:</p>
+<pre class="programlisting">
+&lt;environments&gt;
+  &lt;environment id="unix"&gt;
+    &lt;name&gt;Unix&lt;/name&gt;
+    &lt;shortname&gt;U.&lt;/shortname&gt;
+    &lt;desc&gt;
+      A computer operating system originally developed in 1969
+      by a group of AT&amp;T employees...&lt;/desc&gt;
+  &lt;/environment&gt;
+  ...
+&lt;/environments&gt;
+</pre>
+<p>If the environment is also one of the concepts, note the difference between the description here and the concept description: environment's description may provide info on the terminology aspects of the environment (if none are needed, the environment description may just point to the concept by a <code class="literal">ref</code> node).</p>
+<p>An environment may specify terminology-wise close environments: if a term is not defined in the present environment, another from a close environment can be used as if it were its own. Close environments are specified by a list of environment keys in the <code class="literal">closeto</code> attribute of the <code class="literal">environment</code> node. The list order matters: the first environment is considered the closest, etc.</p>
+<p>Clients may sometimes need to pick one environment among others, or to order them in a certain way. Two additional attributes may be specified to influence clients at this. The <code class="literal">meta</code> attribute states that the environment is not a true environment (e.g. it may be an umbrella for several environments), and takes one of truth values <code class="literal">1|y|yes|t|true</code>. The <code class="literal">weight</code> attribute specifies environment's priority, in a case-dependent sense, and takes numbers from 0 to 9 as values (0 is default).</p>
+</dd>
+<dt><a name="kd-editors" id="kd-editors"></a><span class="term"><code class="literal">editors</code></span></dt>
+<dd>
+<p>People who are, or were at one point, adding and modifying the content of the glossary. These keys are applied using the <code class="literal">by</code> attribute. An editor definition contains the name and short name (usually initials), email address, affiliation, and description:</p>
+<pre class="programlisting">
+&lt;editors&gt;
+  &lt;editor id="hjjr"&gt;
+    &lt;name&gt;Henry Jones, Jr.&lt;/name&gt;
+    &lt;shortname&gt;IJ&lt;/shortname&gt;
+    &lt;email&gt;henry.jones.jr@barnett.edu&lt;/email&gt;
+    &lt;affiliation&gt;
+      Barnett College, visiting professor&lt;/affiliation&gt;
+    &lt;desc&gt;
+      Dr. Jones is an eminent archaeologist, who teaches at
+      Barnett College in New York...&lt;/desc&gt;
+  &lt;/editor&gt;
+  ...
+&lt;/editors&gt;
+</pre>
+<p>Email address, affiliation and description are optional.</p>
+</dd>
+<dt><a name="kd-sources" id="kd-sources"></a><span class="term"><code class="literal">sources</code></span></dt>
+<dd>
+<p>Sources which the editors use to assemble the glossary, and applied by the <code class="literal">src</code> attribute. A source can be just about anything: a publication, an institution, a person, etc. Each source defines its full and short name, description, email address, and an URL:</p>
+<pre class="programlisting">
+&lt;sources&gt;
+  &lt;source id="wp"&gt;
+    &lt;name&gt;Wikipedia, the Free Encyclopedia&lt;/name&gt;
+    &lt;shortname&gt;Wp.&lt;/shortname&gt;
+    &lt;url&gt;http://en.wikipedia.org&lt;/url&gt;
+    &lt;desc&gt;
+      A free, multilingual, open content encyclopedia project
+      operated by the non-profit Wikimedia Foundation...&lt;/desc&gt;
+  &lt;/source&gt;
+  &lt;source id="jbl"&gt;
+    &lt;name&gt;J. Bigshot Linguist&lt;/name&gt;
+    &lt;shortname&gt;JBL&lt;/shortname&gt;
+    &lt;email&gt;jbl@allknow.edu&lt;/email&gt;
+    &lt;desc&gt;
+      Esteemed and prolific originator and commentator of many
+      of the terms found within this glossary...&lt;/desc&gt;
+  &lt;/source&gt;
+  ...
+&lt;/sources&gt;
+</pre>
+<p>Email address and URL are optional.</p>
+</dd>
+<dt><a name="kd-topics" id="kd-topics"></a><span class="term"><code class="literal">topics</code></span></dt>
+<dd>
+<p>The topics to which the concepts belong, as applied by the <code class="literal">topic</code> attribute of the concept. The definition contains the full and short name, and a description:</p>
+<pre class="programlisting">
+&lt;topics&gt;
+  &lt;topic id="apollo"&gt;
+    &lt;name&gt;The Apollo Program&lt;/name&gt;
+    &lt;shortname&gt;Apollo&lt;/shortname&gt;
+    &lt;desc&gt;
+      The Apollo program was a human spaceflight program
+      undertaken by NASA during the years...&lt;/desc&gt;
+  &lt;/topic&gt;
+  ...
+&lt;/topics&gt;
+</pre></dd>
+<dt><a name="kd-levels" id="kd-levels"></a><span class="term"><code class="literal">levels</code></span></dt>
+<dd>
+<p>Usage levels applied to the concepts by the <code class="literal">level</code> attribute. They are defined by the full and short name, and a description:</p>
+<pre class="programlisting">
+&lt;levels&gt;
+  &lt;level id="basic"&gt;
+    &lt;name&gt;Basic Concepts&lt;/name&gt;
+    &lt;shortname&gt;basic&lt;/shortname&gt;
+    &lt;desc&gt;
+      The concepts that every user should know about.&lt;/desc&gt;
+  &lt;/level&gt;
+  ...
+&lt;/levels&gt;
+</pre>
+<p>The description is optional.</p>
+</dd>
+<dt><a name="kd-grammar" id="kd-grammar"></a><span class="term"><code class="literal">grammar</code></span></dt>
+<dd>
+<p>Grammar categories for terms and declensions, as given by their <code class="literal">gr</code> attributes. Each is defined by the full and short name, and a description:</p>
+<pre class="programlisting">
+&lt;grammar&gt;
+  &lt;gramm id="pl"&gt;
+    &lt;name&gt;plural&lt;/name&gt;
+    &lt;shortname&gt;pl.&lt;/shortname&gt;
+    &lt;desc&gt;The plural form of the word.&lt;/desc&gt;
+  &lt;/gramm&gt;
+  ...
+&lt;/grammar&gt;
+</pre>
+<p>The description is optional.</p>
+</dd>
+<dt><a name="kd-extroots" id="kd-extroots"></a><span class="term"><code class="literal">extroots</code></span></dt>
+<dd>
+<p>External locations of more detail info on the concept, as provided by the <code class="literal">details</code> child node of a concept. An external root is defined by its full and short name, description, the URL root to which relative paths are appended (given by the <code class="literal">rel</code> attribute in concepts), and an URL for manual browsing:</p>
+<pre class="programlisting">
+&lt;extroots&gt;
+  &lt;extroot id="rloc"&gt;
+    &lt;name&gt;Local files&lt;/name&gt;
+    &lt;shortname&gt;loc.&lt;/shortname&gt;
+    &lt;rooturl&gt;file://usr/share/thisgloss/data&lt;/rooturl&gt;
+    &lt;desc&gt;Files on local disk, installed by this glossary.&lt;/desc&gt;
+  &lt;/extroot&gt;
+  &lt;extroot id="rwp"&gt;
+    &lt;name&gt;Wikipedia&lt;/name&gt;
+    &lt;shortname&gt;Wp.&lt;/shortname&gt;
+    &lt;rooturl&gt;http://en.wikipedia.org/wiki&lt;/rooturl&gt;
+    &lt;browseurl&gt;http://en.wikipedia.org&lt;/browseurl&gt;
+    &lt;desc&gt;Links to articles on Wikipedia.&lt;/desc&gt;
+  &lt;/extroot&gt;
+  ...
+&lt;/extroots&gt;
+</pre>
+<p>The URL for manual browsing is not mandatory.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect1" lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h2 class="title" style="clear: both"><a name="s-textfmt" id="s-textfmt"></a>7.&nbsp;Text Markup</h2>
+</div>
+</div>
+</div>
+<p>Some nodes may contain larger bodies of text, where additional markup is advantageous (e.g. referencing). Such nodes are <code class="literal">desc</code>, <code class="literal">comment</code>, <code class="literal">origin</code>, etc. The following markup can be applied within text contents of such nodes:</p>
+<div class="variablelist">
+<dl>
+<dt><span class="term"><code class="literal">ref</code></span></dt>
+<dd>
+<p>A reference to a concept defined within the glossary. It wraps a phrase indicative of the concept, and points to a concept using the <code class="literal">c</code> attribute (the value being the key of the concept).</p>
+</dd>
+<dt><span class="term"><code class="literal">em</code></span></dt>
+<dd>
+<p>An emphasis on a word or a phrase.</p>
+</dd>
+<dt><span class="term"><code class="literal">ol</code></span></dt>
+<dd>
+<p>A word or a phrase in another language, as opposed to that of the text. Must have a <code class="literal">lang</code> attribute stating the language of the phrase. An optional argument is <code class="literal">wl</code>, which if present indicates that the short language name should be formatted together with the phrase (its value must be one of <code class="literal">1|y|yes|t|true</code>).</p>
+</dd>
+<dt><span class="term"><code class="literal">link</code></span></dt>
+<dd>
+<p>Link to an external resource. The URL of the resource is given by the <code class="literal">url</code> attribute, which is mandatory.</p>
+</dd>
+</dl>
+</div>
+<p><a name="p-text-struct" id="p-text-struct"></a>Although glossary texts should be kept short and to the point, sometimes the text content could still be long enough to warrant splitting into several paragraphs, and other higher level groupings. All nodes which could reasonably benefit from such structure have an <code class="literal">l*</code> variant, which contain structured text content:</p>
+<pre class="programlisting">
+&lt;ldesc&gt;
+  &lt;para&gt;
+    A huge cloud which is thought to surround our solar system and
+    reach over halfway to the nearest star.&lt;/para&gt;
+  &lt;para&gt;
+    Comets originate in the Oort cloud.&lt;/para&gt;
+&lt;/ldesc&gt;
+</pre>
+<p>Such nodes are: <code class="literal">ldesc</code>, <code class="literal">lcomment</code>, and <code class="literal">lorigin</code>. These can be used everywhere instead of their simpler counterparts. For the moment, the only structuring element are paragraphs (the <code class="literal">para</code> nodes), but more may be introduced in the future.</p>
+<p><a name="text-sel-by-env" id="text-sel-by-env"></a>Sometimes a lot of text may need duplicating due to a single phrase in it differing across environments, typically in description nodes -- see an <a class="link" href="#pl-desc-by-env">earlier example</a>. To prevent this duplication, clients will support special embedded text selection by environment. Using embedded selection, the mentioned example can be rewritten as:</p>
+<pre class="programlisting">
+&lt;concept id="directory"&gt;
+  &lt;desc&gt;
+    An entity in a &lt;ref c="filesystem"&gt;file system&lt;/r&gt; which
+    contains a group of &lt;ref c="file"&gt;files&lt;/r&gt; and other
+    ~directories|mac:folders|amiga:drawers~.&lt;/desc&gt;
+  &lt;term&gt;directory&lt;/term&gt;
+  &lt;term env="mac"&gt;folder&lt;/term&gt;
+  &lt;term env="amiga"&gt;drawer&lt;/term&gt;
+&lt;/concept&gt;
+</pre>
+<p>i.e. the embedded selector is of the form <code class="code">~env1:phrase1|env2:phrase2|...~</code>, where if one of the environment keys is empty or omitted (as in the example), that phrase inherits the surrounding text's environment. Instead of a single environment key, a whitespace separated list can also be given. The tilde character (~) cannot be a part of ordinary text by itself, but it can be escaped by doubling it (~~). This kind of special-form selection is unusual by XML standards, but has been introduced due to being more human-readable and editable in the running text than e.g. a selection node with subnodes per environment: <code class="code">&lt;select&gt;&lt;for env="env1"&gt;phrase1&lt;/for&gt;&lt;for env="env2"&gt;phrase2&lt;/for&gt;...&lt;/select&gt;</code>.</p>
+</div>
+<div class="appendix" lang="en">
+<h2 class="title" style="clear: both"><a name="a-dgdistro" id="a-dgdistro"></a>A.&nbsp;Distribution</h2>
+<p>Divergloss is distributed in a package which, aside from the format definition and documentation, contains command-line tools for processing Divergloss glossaries into various end-user formats, and requires minimum installation fuss. This enables users to quickly start writting and putting glossary data to practical uses.</p>
+<p>Since Divergloss is still early in the development, the best place to get the package from is <a class="ulink" href="http://gitorious.org/projects/divergloss" target="_top">Gitorious</a>, by <span class="emphasis"><em>cloning</em></span> the <a class="ulink" href="http://git.or.cz/" target="_top">Git</a> repository:</p>
+<pre class="screen">
+$ git clone git://gitorious.org/divergloss/mainline.git
+</pre>
+<p>This will create directory <code class="filename">mainline/</code> with the complete repository. In it there will be the <code class="filename">README</code> file with short setup instructions. The repository can later always be updated to the newest version by issuing:</p>
+<pre class="screen">
+$ cd mainline/
+$ git pull
+</pre>
+<p>In the package there is a Python module, <code class="literal">dg</code>, which provides easy access to glossary content and functionality frequently needed for manipulating glossary data. While e.g. XSLT is very succinct for straightforward mappings of XML data, building glossary outputs (among other things) may be much more demanding than that, and therefore more easily tackled with a general purpose programming language such as Python. Not the least is Python's ease of use and rich variety of modules, which makes any special processing of glossaries that much more viable.</p>
+<p>The packaged <span class="command"><strong>dgproc.py</strong></span> script is one immediate user of the <code class="literal">dg</code> module. It operates by pushing Divergloss files through <span class="emphasis"><em>sieves</em></span>, which build outputs and perform other operations on the glossary. In the basic mode, when run with the glossary file as the single argument, <span class="command"><strong>dgproc.py</strong></span> will validate the glossary, reporting also the problems not discoverable by DTD validation. If the glossary file is <code class="filename">gloss.xml</code>, then executing:</p>
+<pre class="screen">
+$ dgproc.py gloss.xml
+</pre>
+<p>will give no output if the glossary is technically valid.</p>
+<p>The list of applicable sieves may be seen by issuing the <code class="option">--list-sieves</code> (<code class="option">-S</code>) option. For example, if the glossary contain terms in English (<code class="literal">en</code>) and German (<code class="literal">de</code>), <code class="literal">bidict-html</code> sieve may be used to create an embeddable HTML dictionary table, with collapsible concept descriptions:</p>
+<pre class="screen">
+$ dgproc.py html-bidict gloss.xml -solang:en -stlang:de -sfile:gloss.html
+</pre>
+<p>where <code class="option">-s...</code> options issue sieve parameters. Or, to create a TBX glossary file for use in tools that can make use of it (e.g. a translation editor may automatically issue terminology recommendations):</p>
+<pre class="screen">
+$ dgproc.py tbx gloss.xml -sfile:gloss.tbx
+</pre>
+<p>List of parameters for each sieve may be seen by following the sieve name with the <code class="option">--help-sieves</code> (<code class="option">-H</code>). Each sieve is described in more detail in the <code class="literal">dg.sieve</code> module documentation contained in the package.</p>
+</div>
+<div class="appendix" lang="en">
+<h2 class="title" style="clear: both"><a name="a-ack" id="a-ack"></a>B.&nbsp;Acknowledgments</h2>
+<p>The following sources were used when making up the examples:</p>
+<div class="itemizedlist">
+<ul type="disc">
+<li>
+<p><a class="ulink" href="http://en.wikipedia.org" target="_top">Wikipedia</a>, the Free Encyclopedia.</p>
+</li>
+<li>
+<p><a class="ulink" href="http://starchild.gsfc.nasa.gov" target="_top">StarChild</a>, NASA's learning center for young astronomers.</p>
+</li>
+<li>
+<p><a class="ulink" href="http://www.barnettcollege.com/" target="_top">barnettcollege.com</a>, the official website for the development of a freeware point&amp;click adventure "Indiana Jones and The Fountain of Youth", by Screen 7.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</body>
+</html>

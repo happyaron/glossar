@@ -1,0 +1,738 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+ "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+    <!ENTITY dg "Divergloss">
+    <!ENTITY bool-true "<literal>1|y|yes|t|true</literal>">
+]>
+<article lang="en">
+
+<articleinfo>
+
+    <title>The &dg; XML</title>
+
+    <authorgroup>
+        <author>
+            <firstname>Chusslove</firstname><surname>Illich</surname>
+            <email>caslav.ilic@gmx.net</email>
+        </author>
+    </authorgroup>
+
+    <copyright>
+        <year>2008</year>
+        <holder>Chusslove Illich (Часлав Илић)</holder>
+    </copyright>
+
+    <legalnotice>
+        <para>Permission is granted to copy, distribute and/or modify this document under the terms of the GNU Free Documentation License, Version 1.2.</para>
+    </legalnotice>
+
+    <revhistory>
+        <revision>
+            <date>@date@</date>
+            <revremark>Last modification (repository rev. @vcsrev@).</revremark>
+        </revision>
+        <revision>
+            <date>2008-02-18</date>
+            <authorinitials>CI</authorinitials>
+            <revremark>Writing started.</revremark>
+        </revision>
+    </revhistory>
+
+    <abstract>
+        <para>This document informally describes the &dg; XML format. It can be read as a tutorial and usage guide to &dg;, with some design rationales provided along the way.
+        <warning><para>&dg; is work in progress, and should be considered experimental at this moment.</para></warning>
+        </para>
+    </abstract>
+
+</articleinfo>
+
+<sect1 id="s-descons">
+    <title>Design Considerations</title>
+
+    <para>&dg;, short of "Diversity Glossary", is an instance of XML for handling glossary data -- succinct descriptions connected with terms which name certain concepts. A necessary question to answer up front is, why yet another XML format for glossaries? For example, there is the <ulink url="http://www.lisa.org/standards/tbx/">TBX</ulink> format ("TermBase eXchange") by LISA, used widely in localization industry and submitted for adoption as ISO standard. Another option is the glossary document type of the <ulink url="http://www.docbook.org/">Docbook</ulink> format. To answer this, we must consider the goals behind &dg;:
+    <itemizedlist>
+        <listitem>
+            <para>Producers of glossaries should not need in-depth understanding of linguistics or markup languages. The glossary data comes from "ordinary" fields, rather than e.g. linguistic research or natural language AI.</para>
+        </listitem>
+        <listitem>
+            <para>Advanced glossary features are hidden when not needed, rather than requiring a lot of scaffolding for simple glossaries. This relates to both the format as such, and tools needed to validate and produce it.</para>
+        </listitem>
+        <listitem>
+            <para>The format should be well human readable and editable. While special GUI applications can present glossary data in nicer form for user consumption, the plain XML source should make intuitive sense.</para>
+        </listitem>
+        <listitem>
+            <para>The same glossary may be used in various contexts within same language. There may be several terms naming the same concept, not only synonymously, but according to the user's environment. The same holds for the concept descriptions.</para>
+        </listitem>
+        <listitem>
+            <para>Glossaries should evolve by contributions of many people, and be updated according to various external sources of glossary data. A form of version control on the file level is assumed, but some intrinsic support for this process should be provided as well.</para>
+        </listitem>
+    </itemizedlist></para>
+
+    <para>Conversely, &dg; does not place much importance into the following:
+    <itemizedlist>
+        <listitem>
+            <para>Wide generality, with features for custom specialization according to the field and desired levels of representation depth. Instead, common needs are supported by many built-in tags in a rather flat hierarchy.</para>
+        </listitem>
+        <listitem>
+            <para>Strict adherence to the XML data representation practices, when these would impair readability and editability. For example, some records may be encoded as special strings, rather than long sequences of nodes and subnodes.</para>
+        </listitem>
+    </itemizedlist></para>
+
+    <para>In essence, &dg; favors simplicity, ease of getting involved both in terms of cognitive effort and needed tools, at the expense of generality and formal correctness as viewed from pure data-encoding standpoint. This is in contrast with the aforementioned TBX, which is intended as end-all of glossary formats, and in practice mostly handled through features of dedicated glossary or CAT (Computer-Aided Translation) tools. Docbook glossary format, on the other hand, while offering similar simplicity, is too lightweight to cover all envisaged uses of &dg;.</para>
+
+    <para>It is, however, possible that &dg; could be made an instance of TBX, i.e. one of its XCS ("eXtensible Constraint Specification") customizations. This would facilitate the conversion of &dg; into TBX glossaries, for use by existing CAT tools. Some sort of conversion to TBX is, of course, possible in any case, but no effort to that end has been undertaken as of yet.</para>
+
+</sect1>
+
+<sect1 id="s-basics">
+    <title>Basics</title>
+
+    <para>&dg; strives for language neutrality. There is no limitation on how many languages, and precisely in which fashion, may a single glossary document support. This need is highly dependent on locale and field of use: a glossary of pre-Columbian civilizations for American users may get away fully monolingual, a glossary of oceanic freight for German users may state English terms too, while a glossary of astronomy for Tunisian users may need to be fully Arabic-French bilingual (both descriptions and terms).</para>
+
+    <para>Within each language, &dg; supports another level of diversity: in different environments, e.g. within two large companies doing similar business, same concepts may be named differently. An outsider may thus consider them synonymous, but a user within one of those environments should be primarily presented with the term native to it. "Fully" synonymous terms, in this sense, will have both the language and the environment same.</para>
+
+    <para>Aside from language and environment, each description and term can be equipped with a myriad of supplementary data. For example, the description may have an additional comment on source of the text, while a base term may come with few declinations which would be hard for user to guess by general rules of the language.</para>
+
+    <para>Bearing previous passages in mind, the entries in &dg; documents are organized by <emphasis>concepts</emphasis>, not apriori linked to any of the terms. Instead, each concept is referenced by a unique key, and contains any number of descriptions and terms. Here is the simplest example of glossary with two terms in it:
+    <programlisting><![CDATA[
+<?xml version="1.0" encoding="UTF-8"?>
+<glossary id="cosmogloss" lang="en">
+
+  <metadata>
+    <title>A Short Cosmic Glossary</title>
+  </metadata>
+
+  <keydefs>
+    <languages>
+      <language id="en">
+        <name>English</name>
+        <shortname>En.</shortname>
+      </language>
+    </languages>
+  </keydefs>
+
+  <concepts>
+
+    <concept id="blackhole">
+      <desc>
+        The leftover core of a super massive star after a supernova,
+        that exerts a tremendous gravitational pull.</desc>
+      <term>black hole</term>
+    </concept>
+
+    <concept id="quasar">
+      <desc>
+        A distant energy source which gives off vast amounts of
+        radiation, including radio waves and X-rays.</desc>
+      <term>quasar</term>
+    </concept>
+
+  </concepts>
+
+</glossary>
+]]></programlisting>
+    </para>
+
+    <para>The <literal>glossary</literal> top node states the unique glossary identifier, by the <literal>id</literal> attribute. The default language used in the glossary is given by <literal>lang</literal> attribute, which applies to all text in the document where not locally overridden. <link linkend="p-metadata">The <literal>metadata</literal> node</link> contains general info about the glossary, like title, description, etc. All keys in a &dg; glossary, such as the language value to the <literal>lang</literal> attributes, are defined by the <link linkend="s-keydefs">the <literal>keydefs</literal> node</link>.</para>
+
+    <para>Glossary entries are grouped under <link linkend="s-concepts">the <literal>concepts</literal> node</link>. Each <literal>concept</literal> node has an <literal>id</literal> attribute, a key which uniquely defines the concept. Each concept can contain any number of descriptions and terms, defined by <literal>desc</literal> and <literal>term</literal> nodes; each may override the default language using the <literal>lang</literal> attribute.</para>
+
+    <para id='p-attr-lang'>Let us now add terms in few other languages:
+    <programlisting><![CDATA[
+<concept id="blackhole">
+  <desc>
+    The leftover core of a super massive star after a supernova,
+    that exerts a tremendous gravitational pull.</desc>
+  <term>black hole</term>
+  <term lang="fr">trou noir</term>
+  <term lang="de">Schwarzes Loch</term>
+</concept>
+]]></programlisting>
+    The term without a <literal>lang</literal> attribute is in English, which was stated as the default language, whereas the two other terms override the language to French and German. In a fully multilingual case, description nodes too could be stated in several languages in the same way.</para>
+
+    <para id='p-attr-env'>How about different environments? Here's a tentative example from a computer glossary:
+    <programlisting><![CDATA[
+<concept id="directory">
+  <desc>
+    An entity in a file system which contains a group of files
+    and other directories.</desc>
+  <term>directory</term>
+  <term env="mac">folder</term>
+  <term env="amiga">drawer</term>
+</concept>
+]]></programlisting>
+    Here, the first term, as before, defines no environment. Other two terms define an environment by use of <literal>env</literal> attribute. The value of <literal>env</literal> attribute is not a text that may be shown to the user, but an environment key. It must be defined elsewhere in the document, together with proper environment name (see <link linkend="kd-environments">the <literal>environments</literal> node</link>). Same as with language, it depends on the client how the environment information will be used when presenting concepts to the user. For example, if the user is reading the glossary on an Amiga, the application may show "drawer" as primary term.</para>
+
+    <para>In the last example, the description text itself mentioned the word "directories". If the user is using an Amiga, shouldn't he see "drawers" instead? When this occurs in a multienvironment glossary, the descriptions too can be specialized by environment. Furthermore, the terms should be properly crossreferenced, so that the client may allow the user to click on the term in description and go to corresponding concept. Putting it all together, we get:
+    <programlisting id="pl-desc-by-env"><![CDATA[
+<concept id="directory">
+  <desc>
+    An entity in a <ref c="filesystem">file system</r> which contains
+    a group of <ref c="file">files</r> and other directories.</desc>
+  <desc env="mac">
+    An entity in a <ref c="filesystem">file system</r> which contains
+    a group of <ref c="file">files</r> and other folders.</desc>
+  <desc env="amiga">
+    An entity in a <ref c="filesystem">file system</r> which contains
+    a group of <ref c="file">files</r> and other drawers.</desc>
+  <term>directory</term>
+  <term env="mac">folder</term>
+  <term env="amiga">drawer</term>
+</concept>
+]]></programlisting>
+    The reference node tag <literal>ref</literal> points to a concept key by its <literal>c</literal> attribute. If duplication of descriptions due to different terms by environment is to be frequently expected, alternatively the terse <link linkend="text-sel-by-env">embedded selection</link> can be used.</para>
+
+    <para id='p-attr-by'>Descriptions and terms may also credit the person who <emphasis>added</emphasis> them into the glossary. This person is an editor of the glossary, not necessarily the one who wrote the description, or coined the term. The editor's credit is assigned using the <literal>by</literal> attribute, for example:
+    <programlisting><![CDATA[
+<desc by="hal">
+  An instruction by a superior factor which, if improperly formulated,
+  can cause a sentient being to undertake unethical actions.</desc>
+<term by="hal">order</term>
+]]></programlisting>
+    where <literal>"hal"</literal> is the person key, possibly made out of the person's initials. These keys and corresponding editors' real names and contact data are defined within <link linkend="kd-editors">the <literal>editors</literal> node</link>.
+    </para>
+
+</sect1>
+
+<sect1 id="s-topstruct">
+    <title>Top Structure</title>
+
+    <para>A &dg; document is divided into the following top-level sections:
+    <programlisting><![CDATA[
+<glossary id="glosskey" lang="xx" env="yyyy">
+  <metadata>
+    ...
+  </metadata>
+
+  <keydefs>
+    ...
+  </keydefs>
+
+  <concepts>
+    ...
+  </concepts>
+</glossary>
+]]></programlisting>
+    </para>
+
+    <para>A particular combination of values to <literal>id</literal>, <literal>lang</literal>, and <literal>env</literal> attributes, should uniquely determine the glossary within the ecosystem of other published &dg; glossaries. The <literal>lang</literal> and <literal>env</literal> attributes are not mandatory; if provided, their values apply to all subnodes where meaningfull and not locally overridden.</para>
+
+    <para id="p-metadata">The <literal>metadata</literal> node provides information about the glossary in general. These include the following child nodes:
+    <variablelist>
+        <varlistentry><term><literal>title</literal></term>
+        <listitem>
+            <para>The title of the glossary.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term><literal>desc</literal></term>
+        <listitem>
+            <para>The description of the glossary.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term><literal>version</literal></term>
+        <listitem>
+            <para>The release version. There are no constraints or recommendations on the versioning scheme.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term><literal>date</literal></term>
+        <listitem>
+            <para>The release date. The format is YYYY-MM-DD regardless of the languages of the glossary; it is client's duty to format for presentation according to user's locale.</para>
+        </listitem>
+        </varlistentry>
+    </variablelist>
+     All child nodes except the <literal>title</literal> are optional. The <literal>title</literal> and <literal>desc</literal> can have the attributes of language (<literal>lang</literal>) and environment (<literal>env</literal>), and can be repeated for unique combinations of those. The values of these attributes are keys defined by <link linkend="s-keydefs">the <literal>keydefs</literal> node</link>.</para>
+
+    <para>The main body of the glossary, concepts and terms naming them, is given by <link linkend="s-concepts">the <literal>concepts</literal> node</link>. This node is mandatory -- not much point in a glossary without a single concept.</para>
+
+    <para>Within metadata and concepts, many keyword-valued attributes may be used, which denote global data in the glossary: languages, environments, editors, topics, etc. These keywords are defined by the <link linkend="s-keydefs">the <literal>keydefs</literal> node</link>, where also the user-presentable info on them is stated. This node is not mandatory, but will be needed for all but the simplest glossaries.</para>
+
+    <para><literal>keydefs</literal> and <literal>concepts</literal> nodes can actually appear more than once, each instance containing the data as described previously. In this way the document can be chunked into files, such that each file can still remain a valid XML. E.g. files containing groups of concepts, categorized in some way, can all start with their own <literal>concepts</literal> root element.</para>
+
+</sect1>
+
+<sect1 id="s-concepts">
+    <title>Concepts</title>
+
+    <para>Concept nodes reside within the <literal>concepts</literal> node of the glossary:
+
+    <programlisting><![CDATA[
+<glossary id="glosskey" lang="en">
+  ...
+  <concepts>
+
+    <concept id="ckey1">
+      ...
+    </concept>
+
+    <concept id="ckey2">
+      ...
+    </concept>
+
+    ...
+
+  </concepts>
+  ...
+</glossary>
+]]></programlisting>
+
+    The ordering of concepts is not important, and each concept key, given by <literal>id</literal> attribute, must be unique. The keys are best chosen mnemonically, for easier crossreferencing.</para>
+
+    <para>The concept node may have the following optional attributes:
+    <variablelist>
+        <varlistentry><term><literal>topic</literal></term>
+        <listitem>
+            <para>A list of topic keys under which this concept may be grouped. The topic keys and names are defined within <link linkend="kd-topics">the <literal>topics</literal> node</link>.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term><literal>level</literal></term>
+        <listitem>
+            <para>Usage level of the concept, as in basic, intermediate, advanced, etc. among the users of the terminology described by the glossary. The level value is a key, defined with corresponding level name by <link linkend="kd-levels">the <literal>levels</literal> node</link>.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term><literal>related</literal></term>
+        <listitem>
+            <para>Reference to closely related concepts, given by a list of concept keys.</para>
+        </listitem>
+        </varlistentry>
+    </variablelist>
+    </para>
+
+    <para>An example of a concept node equipped with several attributes:
+    <programlisting><![CDATA[
+<concept id="saturnv"
+         topic="apollo spacerace" level="newbie" related="n1 proton">
+  <desc>
+    A multistage liquid-fuel expendable rocket used by NASA's Apollo
+    and Skylab programs. Popularly known as the Moon Rocket.</desc>
+  <term>Saturn V</term>
+</concept>
+]]></programlisting>
+    </para>
+
+    <para>All children nodes of the concept may have the attributes <link linkend="p-attr-lang"><literal>lang</literal></link>, <link linkend="p-attr-env"><literal>env</literal></link>, and <link linkend="p-attr-by"><literal>by</literal></link>. The client should use these attributes to decide, possibly based on the execution environment, how and which information to present to the user.</para>
+
+    <para id="p-attr-src">Furthermore, description and term nodes may have the <literal>src</literal> attribute, which unlike the <literal>by</literal> attribute, defines the source of description or term: another glossary, publication in the field, etc. The source value is a key, with the source data behind it defined by <link linkend="kd-sources">the <literal>sources</literal> node</link>.</para>
+
+    <para>There can be one or several description nodes, or even none. When two descriptions have the same values of <literal>lang</literal> and <literal>env</literal> attributes, they are to be considered as different takes at same explanation. Similarly, the concept may be named by one or several terms (with term nodes being detailed in <link linkend="s-terms">their own section</link>); but there may also be no terms, for concepts which are as of yet unnamed. The following is a valid concept definition:
+    <programlisting><![CDATA[
+<concept id="alexq" topic="arch">
+  <desc>The quality without a name.</desc>
+</concept>
+]]></programlisting>
+    </para>
+
+    <para>Other than descriptions and terms, concept node can have the following children nodes:
+    <variablelist>
+        <varlistentry><term><literal>details</literal></term>
+        <listitem>
+            <para>Reference to external information about the concept, explaining concept in more details. The source of the information is pointed to using two attributes: the <literal>rel</literal> attribute states the relative path, while the <literal>root</literal> attribute is a key identifying the root of the path. The root keys and related names and data retrieval instructions are defined in the <link linkend="kd-extroots">the <literal>extroots</literal> node</link>. The text content of the node, if non-empty, is a free-form remark (only for special cases, generally not necessary).</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term><literal>media</literal></term>
+        <listitem>
+            <para>Non-text resource of value to the conveyance of the concept. This could be, for example, an image of the embodiment of the concept. The media file is pointed to with attributes just like for the <literal>details</literal> node. The text content is the caption of the data, which can be empty, but should be provided nevertheless.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term><literal>origin</literal></term>
+        <listitem>
+            <para>Information on when, where, how, and by whom the concept was originally formulated, introduced, or demonstrated.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term><literal>comment</literal></term>
+        <listitem>
+            <para>Editor's comment on the concept. For example, doubts on the accuracy or wording of the description, topic qualification, etc. Several editors may add their own comments.</para>
+        </listitem>
+        </varlistentry>
+    </variablelist>
+    </para>
+
+</sect1>
+
+<sect1 id="s-terms">
+    <title>Terms</title>
+
+    <para>Each concept may be named by several terms, given by <literal>term</literal> child node of <literal>concept</literal> node. In the simplest case of a traditional glossary, these terms would be synonymous. In a &dg; glossary, clients should consider as synonymous only those terms with equal language and environment attributes.</para>
+
+    <para>All attributes to the <literal>term</literal> node are optional, and are as follows:
+    <variablelist>
+        <varlistentry><term><literal>lang</literal></term>
+        <listitem>
+            <para>The language of the term. The value is a list of language codes, as defined by <link linkend="kd-languages">the <literal>languages</literal> node</link>.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term><literal>env</literal></term>
+        <listitem>
+            <para>The environment in which this term is used. The value is a list of environment keys, as defined by <link linkend="kd-environments">the <literal>environments</literal> node</link>.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term><literal>by</literal></term>
+        <listitem>
+            <para>The editor who added the term into the glossary. Value is a key defined by <link linkend="kd-editors">the <literal>editors</literal> node</link>.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term><literal>src</literal></term>
+        <listitem>
+            <para>The source of the term: an organization, publication, another glossary, a person. The value is a list of source keys, as defined by <link linkend="kd-sources">the <literal>sources</literal> node</link>.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term><literal>gr</literal></term>
+        <listitem>
+            <para>Any grammatical categories to which the term may belong. These can be, for example, gender for a noun, aspect for a verb, etc. The value is a list of category keys, defined by <link linkend="kd-grammar">the <literal>grammar</literal> node</link>.</para>
+        </listitem>
+        </varlistentry>
+    </variablelist>
+    </para>
+
+    <para>Terms may sometimes need additional information, in which case the extended <literal>eterm</literal> node is used. It has the same attributes as the ordinary <literal>term</literal> node, but branches into child nodes, where the nominal form of the term is stated by the <literal>nom</literal> child node:
+    <programlisting><![CDATA[
+<eterm>
+  <nom>phenomenon</nom>
+  ...
+</eterm>
+]]></programlisting>
+    Other, optional child nodes of the extended term include:
+    <variablelist>
+        <varlistentry><term><literal>stem</literal></term>
+        <listitem>
+            <para>Especially for inflected languages, it may be useful to know the stem of the nominal form of the term. Clients may use it for processing user queries into the glossary. Only one stem node is allowed.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term><literal>decl</literal></term>
+        <listitem>
+            <para>A particular declension of the term: cases, genders, moods, etc. The declension category is stated by the mandatory <literal>gr</literal> attribute (like for the <literal>term</literal> node itself), which holds one of the grammar keys defined <link linkend="kd-grammar">the <literal>grammar</literal> node</link>. There can be as many declension nodes as needed. Several declensions may be of the same grammar category, which means that they are all an acceptable variation of that category.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term>origin</term>
+        <listitem>
+            <para>Text describing the history behind the term. Optional attributes are <literal>by</literal> (the editor who added the text), <literal>src</literal> as the key of the source from where the information was obtained, as well as <literal>lang</literal> and <literal>env</literal> when differing from that of the term. There can be more than one origin node, possibly offering alternative views.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term>comment</term>
+        <listitem>
+            <para>Editor's comment on the term. Optional attributes are <literal>by</literal>, stating the editor's key, and <literal>lang</literal> and <literal>env</literal>, in case the language or environment of the comment are different from that of the term. There can be several comments, by the same or different editors.</para>
+        </listitem>
+        </varlistentry>
+    </variablelist>
+    An example of a term with some of the extended data:
+    <programlisting><![CDATA[
+<eterm>
+  <nom>phenomenon</nom>
+  <decl gr="plu">phenomena</decl>
+  <stem>phenomen</stem>
+  <origin src="dictcom">
+    From Greek "phainómenon", over Late Latin "phaenomenon",
+    to appear.</origin>
+</eterm>
+]]></programlisting>
+    </para>
+
+</sect1>
+
+<sect1 id="s-keydefs">
+    <title>Key Definitions</title>
+
+    <para>All the various keys used in concepts and terms are collected and defined within this node, by sections:
+    <programlisting><![CDATA[
+<keydefs>
+  <languages>
+    ...
+  </languages>
+  <environments>
+    ...
+  </environments>
+  ...
+</keydefs>
+]]></programlisting>
+    The keys themselves are always defined by the <literal>id</literal> attribute of the respective key definition node.</para>
+
+    <para>Each node that has a text value, within any of the key definition sections, may be equipped with <literal>lang</literal> and <literal>env</literal> attributes, and repeated for different combinations of them. Clients should use this info to select the text to present to the user as a description behind a particular key.</para>
+
+    <para>The key definition sections are as follows:
+    <variablelist>
+        <varlistentry id="kd-languages">
+        <term><literal>languages</literal></term>
+        <listitem>
+            <para>The languages used within the glossary, as applied by the <literal>lang</literal> attribute. The definition of a language provides its full and short name:
+            <programlisting><![CDATA[
+<languages>
+  <language id="en">
+    <name>English</name>
+    <shortname>En.</shortname>
+  </language>
+  <language id="fr">
+    <name>French</name>
+    <shortname>Fr.</shortname>
+  </language>
+  ...
+</languages>
+]]></programlisting>
+             Language identifiers should follow the codes from <ulink url="http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">ISO 639</ulink>, when available. This is important for relating the language to a system locale, such that language-dependent processing (e.g. alphabetical sorting) may be correctly performed.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry id="kd-environments">
+        <term><literal>environments</literal></term>
+        <listitem>
+            <para>Usage environments for text content, as applied by the <literal>env</literal> attribute. For each environment the full and short name are given, and the description of the environment:
+            <programlisting><![CDATA[
+<environments>
+  <environment id="unix">
+    <name>Unix</name>
+    <shortname>U.</shortname>
+    <desc>
+      A computer operating system originally developed in 1969
+      by a group of AT&T employees...</desc>
+  </environment>
+  ...
+</environments>
+]]></programlisting>
+            If the environment is also one of the concepts, note the difference between the description here and the concept description: environment's description may provide info on the terminology aspects of the environment (if none are needed, the environment description may just point to the concept by a <literal>ref</literal> node).</para>
+            <para>An environment may specify terminology-wise close environments: if a term is not defined in the present environment, another from a close environment can be used as if it were its own. Close environments are specified by a list of environment keys in the <literal>closeto</literal> attribute of the <literal>environment</literal> node. The list order matters: the first environment is considered the closest, etc.</para>
+            <para>Clients may sometimes need to pick one environment among others, or to order them in a certain way. Two additional attributes may be specified to influence clients at this. The <literal>meta</literal> attribute states that the environment is not a true environment (e.g. it may be an umbrella for several environments), and takes one of truth values &bool-true;. The <literal>weight</literal> attribute specifies environment's priority, in a case-dependent sense, and takes numbers from 0 to 9 as values (0 is default).</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry id="kd-editors">
+        <term><literal>editors</literal></term>
+        <listitem>
+            <para>People who are, or were at one point, adding and modifying the content of the glossary. These keys are applied using the <literal>by</literal> attribute. An editor definition contains the name and short name (usually initials), email address, affiliation, and description:
+            <programlisting><![CDATA[
+<editors>
+  <editor id="hjjr">
+    <name>Henry Jones, Jr.</name>
+    <shortname>IJ</shortname>
+    <email>henry.jones.jr@barnett.edu</email>
+    <affiliation>
+      Barnett College, visiting professor</affiliation>
+    <desc>
+      Dr. Jones is an eminent archaeologist, who teaches at
+      Barnett College in New York...</desc>
+  </editor>
+  ...
+</editors>
+]]></programlisting>
+            Email address, affiliation and description are optional.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry id="kd-sources">
+        <term><literal>sources</literal></term>
+        <listitem>
+            <para>Sources which the editors use to assemble the glossary, and applied by the <literal>src</literal> attribute. A source can be just about anything: a publication, an institution, a person, etc. Each source defines its full and short name, description, email address, and an URL:
+            <programlisting><![CDATA[
+<sources>
+  <source id="wp">
+    <name>Wikipedia, the Free Encyclopedia</name>
+    <shortname>Wp.</shortname>
+    <url>http://en.wikipedia.org</url>
+    <desc>
+      A free, multilingual, open content encyclopedia project
+      operated by the non-profit Wikimedia Foundation...</desc>
+  </source>
+  <source id="jbl">
+    <name>J. Bigshot Linguist</name>
+    <shortname>JBL</shortname>
+    <email>jbl@allknow.edu</email>
+    <desc>
+      Esteemed and prolific originator and commentator of many
+      of the terms found within this glossary...</desc>
+  </source>
+  ...
+</sources>
+]]></programlisting>
+            Email address and URL are optional.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry id="kd-topics">
+        <term><literal>topics</literal></term>
+        <listitem>
+            <para>The topics to which the concepts belong, as applied by the <literal>topic</literal> attribute of the concept. The definition contains the full and short name, and a description:
+            <programlisting><![CDATA[
+<topics>
+  <topic id="apollo">
+    <name>The Apollo Program</name>
+    <shortname>Apollo</shortname>
+    <desc>
+      The Apollo program was a human spaceflight program
+      undertaken by NASA during the years...</desc>
+  </topic>
+  ...
+</topics>
+]]></programlisting>
+            </para>
+        </listitem>
+        </varlistentry>
+        <varlistentry id="kd-levels">
+        <term><literal>levels</literal></term>
+        <listitem>
+            <para>Usage levels applied to the concepts by the <literal>level</literal> attribute. They are defined by the full and short name, and a description:
+            <programlisting><![CDATA[
+<levels>
+  <level id="basic">
+    <name>Basic Concepts</name>
+    <shortname>basic</shortname>
+    <desc>
+      The concepts that every user should know about.</desc>
+  </level>
+  ...
+</levels>
+]]></programlisting>
+            The description is optional.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry id="kd-grammar">
+        <term><literal>grammar</literal></term>
+        <listitem>
+            <para>Grammar categories for terms and declensions, as given by their <literal>gr</literal> attributes. Each is defined by the full and short name, and a description:
+            <programlisting><![CDATA[
+<grammar>
+  <gramm id="pl">
+    <name>plural</name>
+    <shortname>pl.</shortname>
+    <desc>The plural form of the word.</desc>
+  </gramm>
+  ...
+</grammar>
+]]></programlisting>
+            The description is optional.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry id="kd-extroots">
+        <term><literal>extroots</literal></term>
+        <listitem>
+            <para>External locations of more detail info on the concept, as provided by the <literal>details</literal> child node of a concept. An external root is defined by its full and short name, description, the URL root to which relative paths are appended (given by the <literal>rel</literal> attribute in concepts), and an URL for manual browsing:
+            <programlisting><![CDATA[
+<extroots>
+  <extroot id="rloc">
+    <name>Local files</name>
+    <shortname>loc.</shortname>
+    <rooturl>file://usr/share/thisgloss/data</rooturl>
+    <desc>Files on local disk, installed by this glossary.</desc>
+  </extroot>
+  <extroot id="rwp">
+    <name>Wikipedia</name>
+    <shortname>Wp.</shortname>
+    <rooturl>http://en.wikipedia.org/wiki</rooturl>
+    <browseurl>http://en.wikipedia.org</browseurl>
+    <desc>Links to articles on Wikipedia.</desc>
+  </extroot>
+  ...
+</extroots>
+]]></programlisting>
+            The URL for manual browsing is not mandatory.</para>
+        </listitem>
+        </varlistentry>
+    </variablelist>
+
+    </para>
+
+</sect1>
+
+<sect1 id="s-textfmt">
+    <title>Text Markup</title>
+
+    <para>Some nodes may contain larger bodies of text, where additional markup is advantageous (e.g. referencing). Such nodes are <literal>desc</literal>, <literal>comment</literal>, <literal>origin</literal>, etc. The following markup can be applied within text contents of such nodes:
+    <variablelist>
+        <varlistentry><term><literal>ref</literal></term>
+        <listitem>
+            <para>A reference to a concept defined within the glossary. It wraps a phrase indicative of the concept, and points to a concept using the <literal>c</literal> attribute (the value being the key of the concept).</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term><literal>em</literal></term>
+        <listitem>
+            <para>An emphasis on a word or a phrase.</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term><literal>ol</literal></term>
+        <listitem>
+            <para>A word or a phrase in another language, as opposed to that of the text. Must have a <literal>lang</literal> attribute stating the language of the phrase. An optional argument is <literal>wl</literal>, which if present indicates that the short language name should be formatted together with the phrase (its value must be one of &bool-true;).</para>
+        </listitem>
+        </varlistentry>
+        <varlistentry><term><literal>link</literal></term>
+            <listitem>
+                <para>Link to an external resource. The URL of the resource is given by the <literal>url</literal> attribute, which is mandatory.</para>
+            </listitem>
+        </varlistentry>
+    </variablelist>
+    </para>
+
+    <para id="p-text-struct">Although glossary texts should be kept short and to the point, sometimes the text content could still be long enough to warrant splitting into several paragraphs, and other higher level groupings. All nodes which could reasonably benefit from such structure have an <literal>l*</literal> variant, which contain structured text content:
+    <programlisting><![CDATA[
+<ldesc>
+  <para>
+    A huge cloud which is thought to surround our solar system and
+    reach over halfway to the nearest star.</para>
+  <para>
+    Comets originate in the Oort cloud.</para>
+</ldesc>
+]]></programlisting>
+    Such nodes are: <literal>ldesc</literal>, <literal>lcomment</literal>, and <literal>lorigin</literal>. These can be used everywhere instead of their simpler counterparts. For the moment, the only structuring element are paragraphs (the <literal>para</literal> nodes), but more may be introduced in the future.</para>
+
+    <para id="text-sel-by-env">Sometimes a lot of text may need duplicating due to a single phrase in it differing across environments, typically in description nodes -- see an <link linkend="pl-desc-by-env">earlier example</link>. To prevent this duplication, clients will support special embedded text selection by environment. Using embedded selection, the mentioned example can be rewritten as:
+    <programlisting><![CDATA[
+<concept id="directory">
+  <desc>
+    An entity in a <ref c="filesystem">file system</r> which
+    contains a group of <ref c="file">files</r> and other
+    ~directories|mac:folders|amiga:drawers~.</desc>
+  <term>directory</term>
+  <term env="mac">folder</term>
+  <term env="amiga">drawer</term>
+</concept>
+]]></programlisting>
+    i.e. the embedded selector is of the form <code>~env1:phrase1|env2:phrase2|...~</code>, where if one of the environment keys is empty or omitted (as in the example), that phrase inherits the surrounding text's environment. Instead of a single environment key, a whitespace separated list can also be given. The tilde character (~) cannot be a part of ordinary text by itself, but it can be escaped by doubling it (~~). This kind of special-form selection is unusual by XML standards, but has been introduced due to being more human-readable and editable in the running text than e.g. a selection node with subnodes per environment: <code><![CDATA[<select><for env="env1">phrase1</for><for env="env2">phrase2</for>...</select>]]></code>.</para>
+
+</sect1>
+
+<appendix id="a-dgdistro">
+    <title>Distribution</title>
+
+    <para>&dg; is distributed in a package which, aside from the format definition and documentation, contains command-line tools for processing &dg; glossaries into various end-user formats, and requires minimum installation fuss. This enables users to quickly start writting and putting glossary data to practical uses.</para>
+
+    <para>Since &dg; is still early in the development, the best place to get the package from is <ulink url="http://gitorious.org/projects/divergloss">Gitorious</ulink>, by <emphasis>cloning</emphasis> the <ulink url="http://git.or.cz/">Git</ulink> repository:
+    <screen><![CDATA[
+$ git clone git://gitorious.org/divergloss/mainline.git
+]]></screen>
+    This will create directory <filename>mainline/</filename> with the complete repository. In it there will be the <filename>README</filename> file with short setup instructions. The repository can later always be updated to the newest version by issuing:
+    <screen><![CDATA[
+$ cd mainline/
+$ git pull
+]]></screen>
+    </para>
+
+    <para>In the package there is a Python module, <literal>dg</literal>, which provides easy access to glossary content and functionality frequently needed for manipulating glossary data. While e.g. XSLT is very succinct for straightforward mappings of XML data, building glossary outputs (among other things) may be much more demanding than that, and therefore more easily tackled with a general purpose programming language such as Python. Not the least is Python's ease of use and rich variety of modules, which makes any special processing of glossaries that much more viable.</para>
+
+    <para>The packaged <command>dgproc.py</command> script is one immediate user of the <literal>dg</literal> module. It operates by pushing &dg; files through <emphasis>sieves</emphasis>, which build outputs and perform other operations on the glossary. In the basic mode, when run with the glossary file as the single argument, <command>dgproc.py</command> will validate the glossary, reporting also the problems not discoverable by DTD validation. If the glossary file is <filename>gloss.xml</filename>, then executing:
+    <screen><![CDATA[
+$ dgproc.py gloss.xml
+]]></screen>
+    will give no output if the glossary is technically valid.</para>
+
+    <para>The list of applicable sieves may be seen by issuing the <option>--list-sieves</option> (<option>-S</option>) option. For example, if the glossary contain terms in English (<literal>en</literal>) and German (<literal>de</literal>), <literal>bidict-html</literal> sieve may be used to create an embeddable HTML dictionary table, with collapsible concept descriptions:
+    <screen><![CDATA[
+$ dgproc.py html-bidict gloss.xml -solang:en -stlang:de -sfile:gloss.html
+]]></screen>
+    where <option>-s...</option> options issue sieve parameters. Or, to create a TBX glossary file for use in tools that can make use of it (e.g. a translation editor may automatically issue terminology recommendations):
+    <screen><![CDATA[
+$ dgproc.py tbx gloss.xml -sfile:gloss.tbx
+]]></screen>
+    List of parameters for each sieve may be seen by following the sieve name with the <option>--help-sieves</option> (<option>-H</option>). Each sieve is described in more detail in the <literal>dg.sieve</literal> module documentation contained in the package.</para>
+</appendix>
+
+<appendix id="a-ack">
+    <title>Acknowledgments</title>
+
+    <para>The following sources were used when making up the examples:
+    <itemizedlist>
+        <listitem>
+            <para><ulink url="http://en.wikipedia.org">Wikipedia</ulink>, the Free Encyclopedia.</para>
+        </listitem>
+        <listitem>
+            <para><ulink url="http://starchild.gsfc.nasa.gov">StarChild</ulink>, NASA's learning center for young astronomers.</para>
+        </listitem>
+        <listitem>
+            <para><ulink url="http://www.barnettcollege.com/">barnettcollege.com</ulink>, the official website for the development of a freeware point&amp;click adventure "Indiana Jones and The Fountain of Youth", by Screen 7.</para>
+        </listitem>
+    </itemizedlist>
+    </para>
+</appendix>
+
+</article>

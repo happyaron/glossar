@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dg.construct</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dg-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="dg-module.html">Package&nbsp;dg</a> ::
+        Module&nbsp;construct
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module construct</h1><p class="nomargin-top"></p>
+<p>Construct internal glossary out of a Divergloss XML document.</p>
+  <h1 class="heading">Glossary Structure</h1>
+    <p>For manipulations in the client code, the glossary is structured as 
+    a tree of node object, where XML attributes and children elements map 
+    to data attributes (sequences when required) of a node object.</p>
+    <p>All node objects are of base type <a 
+    href="dg.construct.Gnode-class.html" class="link">Gnode</a>, which is 
+    subclassed to match corresponding Divergloss XML elements. For example,
+    <code>&lt;concept&gt;</code> XML elements are represented by objects of
+    the <a href="dg.construct.Concept-class.html" class="link">Concept</a> 
+    subclass of <a href="dg.construct.Gnode-class.html" 
+    class="link">Gnode</a>.</p>
+    <p>A g-node may have data attributes of types as follows:</p>
+    <ul>
+      <li>
+        string: used to represent XML element attributes
+      </li>
+      <li>
+        list of strings: used to represent list-valued XML element 
+        attributes
+      </li>
+      <li>
+        g-node: for non-repeating children of an XML element
+      </li>
+      <li>
+        list of g-nodes: repeating children XML elements without a unique 
+        ID
+      </li>
+      <li>
+        dict of g-nodes: repeating children having a unique ID
+      </li>
+      <li>
+        d-set of g-nodes: repeating children having 
+        <code>lang</code>/<code>env</code> attributes
+      </li>
+    </ul>
+    <p>String and list of string attributes are just that, named as the 
+    underlying XML attribute and having its value or list of values. E.g. 
+    if the top glossary node is <code>gloss</code>, and there is a concept 
+    with the ID <code>con</code>, the list of its related concepts (i.e. 
+    their keys) may be reached by 
+    <code>gloss.concepts[con].related</code>.</p>
+    <p>XML elements which are unique children of their parent are 
+    represented by a <a href="dg.construct.Gnode-class.html" 
+    class="link">Gnode</a> attribute. For example, the email address of an 
+    editor with the ID <code>ed</code> is obtained by 
+    <code>gloss.editors[ed].email</code>.</p>
+    <p>List and dict attributes are named as the corresponding XML 
+    elements, but additionally in plural (-s ending) to indicate their 
+    sequence nature. These were already seen in previous passages, e.g. to 
+    get to the concept with ID <code>con</code> one uses 
+    <code>gloss.concepts[con]</code>.</p>
+    <p>The most peculiar members of g-nodes' ensemble of attributes are 
+    <i>d-sets</i>, short for &quot;diversity sets&quot;. Many of Divergloss
+    elements can carry language and environment (langenv for short) 
+    attributes, as a &quot;diversification&quot; moment of the glossary. It
+    would be burdensome to represent such children elements as ordinary 
+    sequences, since they usually need to be accessed by a langenv 
+    combination. A d-set attribute of a g-node is named same as its XML 
+    namesake (not in plural), but has the type <a 
+    href="dg.dset.Dset-class.html" class="link">Dset</a>, and is callable 
+    for specialization by langenv. For example, if there is a language 
+    <code>lang</code> and environment <code>env</code> in the glossary, the
+    terms naming the concept <code>con</code> in that langenv are obtained 
+    by the quering the term d-set like 
+    <code>gloss.concepts[ckey].term(lang, env)</code>; this will return a 
+    <i>list</i> of term g-nodes, which may have one, more, or zero 
+    elements, depending if in that langenv the term is unique, has 
+    synonyms, or isn't defined at all.</p>
+    <p>Additional notes on the structure:</p>
+    <ul>
+      <li>
+        The internal structure closely follows the Divergloss XML element 
+        structure, but for the top containers, the 
+        <code>&lt;metadata&gt;</code>, <code>&lt;keydefs&gt;</code>, and 
+        <code>&lt;concepts&gt;</code> elements. These are not present 
+        internally, their content having been flattened in the top g-node. 
+        Thus, instead of e.g. <code>gloss.keydefs.editors[ed]</code>, the 
+        path is just <code>gloss.editors[ed]</code>. This is because in the
+        XML, these containers serve only to allow better chunking of the 
+        document.
+      </li>
+      <li>
+        Dual XML elements, such as <code>desc</code>/<code>ldesc</code> or 
+        <code>term</code>/<code>eterm</code> are always represented as an 
+        attribute of the shorter name. This is because the duality is 
+        caused by constraints of XML, while there is no need for it 
+        internally. For terms, this means that internally the nominal form 
+        of the term is always accessed as <code>termnode.nom</code>, 
+        regardless if the XML was <code>&lt;term&gt;...&lt;/term&gt;</code>
+        or 
+        <code>&lt;eterm&gt;&lt;nom&gt;...&lt;/nom&gt;&lt;/eterm&gt;</code>.
+      </li>
+      <li>
+        Attributes and elements defined as optional by Divergloss DTD for a
+        particular element, are always present in its corresponding g-node.
+        For attributes or child elements that the XML element didn't 
+        contain, g-node attributes will have appropriate null-value: 
+        non-sequences will be <code>None</code>, and sequences empty.
+      </li>
+      <li>
+        The <code>env</code> attribute, when present in a g-node, will 
+        never be an empty sequence. It is, like language, inherited from 
+        first parent g-node that has it, and the top g-node will set it to 
+        <code>[None]</code> if not explicitly provided.
+      </li>
+      <li>
+        Each g-node has a <code>parent</code> attribute, which points to 
+        the parent g-node. For the top g-node its value is 
+        <code>None</code>. Remember this if at any time you want to make 
+        deep copy a g-node.
+      </li>
+      <li>
+        D-sets may be queried without providing language and environment 
+        parameters, in which case they use langenv of their parent.
+      </li>
+    </ul>
+    <p>See <a href="dg.construct.Glossary-class.html" 
+    class="link">Glossary</a> for full hierarchical overview of data 
+    attributes.</p>
+  <h1 class="heading">Text Representation</h1>
+    <p>Text within Diverloss XML elements is always internally represented 
+    as a <code>text</code> attribute of a g-node. The type of this 
+    attribute is always <a href="dg.construct.Text-class.html" 
+    class="link">Text</a>, regardless if the XML element allowed text 
+    markup or only plain text. <a href="dg.construct.Text-class.html" 
+    class="link">Text</a> is a base class for text segments, from which 
+    other segment types are subclassed, like <code>Para</code>, 
+    <code>Ref</code>, etc. according to XML markup elements. <a 
+    href="dg.construct.Text-class.html" class="link">Text</a> is itself a 
+    subclass of list, i.e. on the basic level text markup is represented as
+    nested list of lists, with terminal elements pure strings. For example,
+    XML text such as:</p>
+<pre class="literalblock">
+   Blah blah &lt;ref c='whatever'&gt;one&lt;/ref&gt; blah &lt;em&gt;other&lt;/em&gt; blah.
+</pre>
+    <p>would be represented in pseudo-form as:</p>
+<pre class="literalblock">
+   Text['Blah blah ', Ref['one'], ' blah ', Em['other'], ' blah.']
+</pre>
+    <p>where <code>Foo[]</code> stands for instance of <code>Text</code>, 
+    i.e. of list, of type <code>Foo</code>. The <code>Ref</code> object in 
+    the list would further have a <code>c</code> attribute with the 
+    referenced concept key as its value.</p>
+    <p>To convert text represented like this into an output format, like 
+    plain or HTML text, there is the <a href="dg.textfmt-module.html" 
+    class="link">textfmt</a> module which contains various formatters. E.g.
+    to turn a certain concept description into plain text, in a certain 
+    langenv context, we would do:</p>
+<pre class="literalblock">
+   tf = textfmt.TextFormatterPlain(gloss, lang, env)
+   plaindesc = tf(gloss.concepts[con].desc(lang, env)[0].text)
+</pre>
+    <p>where the langenv must be specified when creating the formatter too,
+    in order to resolve any internal markup which draws strings from other 
+    places in the glossary (e.g. the language name in <code>&lt;ol 
+    lang=&quot;...&quot;&gt;</code>).</p>
+    <p>When writing search filters, it is probably best to pass the text 
+    through the formatter and search on the plain text version of it.</p>
+
+<hr />
+<div class="fields">      <p><strong>Author:</strong>
+        Chusslove Illich (&#1063;&#1072;&#1089;&#1083;&#1072;&#1074; &#1048;&#1083;&#1080;&#1115;) &lt;caslav.ilic@gmx.net&gt;
+      </p>
+      <p><strong>License:</strong>
+        GPLv3
+      </p>
+</div><!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Classes</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Gnode-class.html" class="summary-name">Gnode</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Glossary-class.html" class="summary-name">Glossary</a><br />
+      Root node of internal representation of the glossary.
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Language-class.html" class="summary-name">Language</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Environment-class.html" class="summary-name">Environment</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Editor-class.html" class="summary-name">Editor</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Source-class.html" class="summary-name">Source</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Topic-class.html" class="summary-name">Topic</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Level-class.html" class="summary-name">Level</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Gramm-class.html" class="summary-name">Gramm</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Extroot-class.html" class="summary-name">Extroot</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Concept-class.html" class="summary-name">Concept</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Term-class.html" class="summary-name">Term</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Title-class.html" class="summary-name">Title</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Version-class.html" class="summary-name">Version</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Name-class.html" class="summary-name">Name</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Shortname-class.html" class="summary-name">Shortname</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Affiliation-class.html" class="summary-name">Affiliation</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Desc-class.html" class="summary-name">Desc</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Origin-class.html" class="summary-name">Origin</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Comment-class.html" class="summary-name">Comment</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Details-class.html" class="summary-name">Details</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Media-class.html" class="summary-name">Media</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Decl-class.html" class="summary-name">Decl</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.OnlyText-class.html" class="summary-name">OnlyText</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Date-class.html" class="summary-name">Date</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Email-class.html" class="summary-name">Email</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Url-class.html" class="summary-name">Url</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.RootUrl-class.html" class="summary-name">RootUrl</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.BrowseUrl-class.html" class="summary-name">BrowseUrl</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Nom-class.html" class="summary-name">Nom</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Stem-class.html" class="summary-name">Stem</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Text-class.html" class="summary-name">Text</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Para-class.html" class="summary-name">Para</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Ref-class.html" class="summary-name">Ref</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Em-class.html" class="summary-name">Em</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Ol-class.html" class="summary-name">Ol</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.construct.Link-class.html" class="summary-name">Link</a>
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Functions</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><a href="dg.construct.Gnode-class.html" class="link">Gnode</a></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dg.construct-module.html#from_file" class="summary-sig-name">from_file</a>(<span class="summary-sig-arg">dgfile</span>,
+        <span class="summary-sig-arg">validate</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Construct glossary from a Divergloss file.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><a href="dg.construct.Gnode-class.html" class="link">Gnode</a></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="dg.construct-module.html#from_tree" class="summary-sig-name">from_tree</a>(<span class="summary-sig-arg">tree</span>,
+        <span class="summary-sig-arg">validate</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Construct glossary from a Divergloss document tree.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Function Details</span></td>
+</tr>
+</table>
+<a name="from_file"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">from_file</span>(<span class="sig-arg">dgfile</span>,
+        <span class="sig-arg">validate</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Construct glossary from a Divergloss file.</p>
+  <p>The glossary file may use XInclude to include subdocuments.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>dgfile</code></strong> (string) - Divergloss file name</li>
+        <li><strong class="pname"><code>validate</code></strong> (bool) - whether to validate the glossary</li>
+    </ul></dd>
+    <dt>Returns: <a href="dg.construct.Gnode-class.html" class="link">Gnode</a></dt>
+        <dd>constructed glossary</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="from_tree"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">from_tree</span>(<span class="sig-arg">tree</span>,
+        <span class="sig-arg">validate</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Construct glossary from a Divergloss document tree.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>tree</code></strong> (etree from <code>lxml.etree</code>) - Divergloss tree</li>
+        <li><strong class="pname"><code>validate</code></strong> (bool) - whether to validate the glossary</li>
+    </ul></dd>
+    <dt>Returns: <a href="dg.construct.Gnode-class.html" class="link">Gnode</a></dt>
+        <dd>constructed glossary</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dg-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

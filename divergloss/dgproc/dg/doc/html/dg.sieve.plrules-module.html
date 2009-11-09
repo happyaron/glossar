@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>dg.sieve.plrules</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dg-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="dg-module.html">Package&nbsp;dg</a> ::
+        <a href="dg.sieve-module.html">Package&nbsp;sieve</a> ::
+        Module&nbsp;plrules
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== MODULE DESCRIPTION ==================== -->
+<h1 class="epydoc">Module plrules</h1><p class="nomargin-top"></p>
+<p>Update terminology rules file for Pology's <code>check-rules</code> 
+  sieve.</p>
+  <p>Pology's <code>check-rules</code> sieve applies series of pattern 
+  rules to messages in a PO file, reporting all those that matched. Each 
+  rule can contain several matching expressions, applied in different ways,
+  and interlinked in a boolean-semantic way. The rules are written in 
+  special rule files.</p>
+  <p>This sieve updates such a rule file (or creates a new one), adding 
+  basic skeletons of new rules for checking terminology in translations; 
+  rules must then be edited manually to make them applicable. This is, in 
+  fact, almost of no value from the point of view of a particular rule, as 
+  the core of the rule must be created by the user. The usefulness of the 
+  sieve lies instead in that it can be used to automatically check if any 
+  of the existing rules needs to be changed due to terminology changes, and
+  add rules for new terminology as it becomes available, without having to 
+  keep track of it manually.</p>
+  <p>If the glossary file is <code>gloss.xml</code>, and contains English 
+  and Serbian terms (en, sr), the terminology rule file 
+  <code>term.rules</code> for English to Serbian translation is both 
+  created and updated using:</p>
+<pre class="literalblock">
+   $ dgproc.py plrules gloss.xml -s olang:en -s tlang:sr \ 
+                                 -s file:term.rules
+</pre>
+  <p>The <code>olang</code> and <code>tlang</code> parameters specify 
+  original and target language, and <code>file</code> the name of the rule 
+  file to be created/updated. If the glossary contains several 
+  environments, one may be selected by the <code>env</code> parameter, or 
+  else the glossary default environment is used.</p>
+  <p>Each rule in the rule file corresponds to one of the concepts, with 
+  the <code>ident</code> field set to the concept key. The terminology pair
+  is given by the rule's <code>hint</code> field, in the form of 
+  <code>&quot;&lt;original-terms&gt; = &lt;target-terms&gt; 
+  [&lt;free-hints&gt;]&quot;</code>. The sieve relies on this field when 
+  updating the rule file, to detect and indicate changes in the 
+  terminology. Thus, any manual modifications to the <code>hint</code> 
+  field, e.g. comments to help translators with non-obvious rules, should 
+  be within the square brackets following the terms.</p>
+  <p>Rules for terminology hierarchies can be maintained using the base 
+  environment parameter, <code>benv</code>. In this mode, first the rules 
+  are updated for the base environment <code>foo</code>, i.e. its key given
+  as <code>env</code>:</p>
+<pre class="literalblock">
+   $ dgproc.py plrules ... -s env:foo
+</pre>
+  <p>and then another set of rules is updated for the inheriting 
+  environment <code>bar</code>, such that its key is given as 
+  <code>env</code>, and base environment's key as <code>benv</code>:</p>
+<pre class="literalblock">
+   $ dgproc.py plrules ... -s env:bar -s benv:foo
+</pre>
+  <p>Rules for the inheriting environment will be updated only for those 
+  concepts with terminology different to that of the base environment.</p>
+  <p>Newly added rules will have <code>@gloss-new</code> string in their 
+  comment. Existing rules for which the terminology has changed will get 
+  <code>@gloss-fuzzy</code>, while those that no longer have a matching 
+  concept will get <code>@gloss-obsolete</code>. When the base environment 
+  is given and the terminology has been changed to match the base one, 
+  <code>@gloss-merge</code> will be set instead of 
+  <code>@gloss-fuzzy</code>.</p>
+  <p>Rule files should be UTF-8 encoded (that is what Pology expects).</p>
+
+<hr />
+<div class="fields">      <p><strong>Author:</strong>
+        Chusslove Illich (&#1063;&#1072;&#1089;&#1083;&#1072;&#1074; &#1048;&#1083;&#1080;&#1115;) &lt;caslav.ilic@gmx.net&gt;
+      </p>
+      <p><strong>License:</strong>
+        GPLv3
+      </p>
+</div><!-- ==================== CLASSES ==================== -->
+<a name="section-Classes"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Classes</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="dg.sieve.plrules.Subcommand-class.html" class="summary-name">Subcommand</a>
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Functions</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="fill_optparser"></a><span class="summary-sig-name">fill_optparser</span>(<span class="summary-sig-arg">parser_view</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="dg-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+      <th class="navbar" width="100%"></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+About
+=====
+
+Divergloss is an XML glossary format with emphasis on ease of plain-text
+editing, incremental features, and immediate practical utility.
+
+This package contains the format definition and documentation, and associated
+processing tools. Important stops in the directory tree are as follows:
+
+    dgproc/ -- processing tools
+        dg/ -- Python module
+            doc/ -- module documentation
+        dtd/ -- format definition
+        po/ -- translations for the module and and tools
+    doc/ -- general documentation
+    example/ -- examples of glossaries
+
+In particular, the main glossary processor is the script dgproc/dgproc.py,
+which is used to produce various output formats from a glossary file.
+See Appendix A. of doc/divergloss.html for examples of its operation.
+
+Installation
+============
+
+The processing tools use lxml Python module, which is not a part of standard
+Python distribution. Install it from you distribution packages, or download
+it from http://codespeak.net/lxml/.
+
+The package may be installed using the pythonic ./setup.py script, but this
+is not recommended at the moment due to the early development state.
+Instead, to use the scripts in dgproc/, just add this directory to PATH.
+To test that the setup works, execute:
+
+    $ dgproc.py example/cosmogloss.xml
+
+and you should get no output if everything is fine.
+
+Also, if there is a translation into your language in dgproc/po/, you can
+make translations ready for use by executing:
+
+    $ dgproc/po/update-po.sh compile
+
+Translations is used not only for the messages issued by tools, but also
+for the text added into various glossary outputs as produced by dgproc.py.
